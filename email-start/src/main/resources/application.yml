@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://admin:123456@127.0.0.1:27017/?authSource=admin
+      authentication-database: admin
+      database: test
