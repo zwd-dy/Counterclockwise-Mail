@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * 统一响应体
+ */
 public class R extends HashMap<String, Object> {
 
     public R() {

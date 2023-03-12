@@ -1,5 +1,6 @@
 package com.github.email;
 
+import com.github.email.common.config.SystemConfig;
 import com.github.email.entity.Mail;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,12 @@ public class MapperTest {
 
     @Test
     public void testMapper(){
-        Mail mail = new Mail();
-        mail.setContent("testtest");
-        mail.setFrom("发件人2");
-        mail.setSubject("主题2");
-        mail.setFileId("235325");
-        mail.setRecipient("收件人2");
-        System.out.println(template.insert(mail));
-
+//        Mail mail = new Mail();
+//        mail.setContent("testtest");
+//        mail.setFrom("发件人2");
+//        mail.setSubject("主题2");
+//        mail.setFileId("235325");
+//        mail.setRecipient("收件人2");
+//        System.out.println(template.insert(mail));
     }
 }
