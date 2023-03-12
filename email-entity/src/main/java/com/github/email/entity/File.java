@@ -1,19 +1,15 @@
 package com.github.email.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_file")
-public class File {
-
-    @Id
-    private String id;
+public class File extends BaseEntity {
     /**
      * 文件名
      */

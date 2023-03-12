@@ -1,19 +1,18 @@
 package com.github.email.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_mail")
-public class Mail {
+public class Mail extends BaseEntity {
 
-    @Id
-    private String id;
     /**
      * 邮件主题
      */

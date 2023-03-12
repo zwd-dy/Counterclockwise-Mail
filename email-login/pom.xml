@@ -6,22 +6,13 @@
     <parent>
         <groupId>com.github.email</groupId>
         <artifactId>email-project-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>com.github.email.login</groupId>
     <artifactId>email-login</artifactId>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
 
     </dependencies>
 
