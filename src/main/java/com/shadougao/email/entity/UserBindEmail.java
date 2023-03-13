@@ -16,7 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_user_bind_email")
-public class UserBindEmail extends BaseEntity{
+public class UserBindEmail extends BaseEntity {
     /**
      * 平台id [SysEmailPlatform]
      */
@@ -32,5 +32,15 @@ public class UserBindEmail extends BaseEntity{
     /**
      * 登录邮箱密码
      */
-    private String emailPassword;
+    private String emailAuth;
+
+    @Override
+    public String toString() {
+        return "UserBindEmail{" +
+                "platformId='" + platformId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", emailUser='" + emailUser + '\'' +
+                ", emailAuth='" + emailAuth + '\'' +
+                '}';
+    }
 }
