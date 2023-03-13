@@ -1,12 +1,15 @@
 package com.shadougao.email.common.utils;
 
+import cn.hutool.core.util.IdUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.Authentication;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.Authenticator;
 import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
@@ -23,8 +26,7 @@ public class JwtUtil {
 
 
     public static String getUUID(){
-        String token = UUID.randomUUID().toString().replaceAll("-", "");
-        return token;
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     /**
@@ -35,6 +37,15 @@ public class JwtUtil {
     public static String createJWT(String subject) {
         JwtBuilder builder = getJwtBuilder(subject, null, getUUID());// 设置过期时间
         return builder.compact();
+    }
+
+    public static String createToken(Authentication authentication) {
+        return Jwts.builder()
+                // 加入ID确保生成的 Token 都不一致
+                .setId(IdUtil.simpleUUID())
+                .claim(JWT_KEY, authentication.getName())
+                .setSubject(authentication.getName())
+                .compact();
     }
 
     /**

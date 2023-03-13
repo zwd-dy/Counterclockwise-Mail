@@ -15,16 +15,18 @@
     <packaging>jar</packaging>
 
 
-    <name>email-project</name>
-    <description>email-project</description>
+    <name>Counterclockwise-Mail</name>
+    <description>Counterclockwise-Mail</description>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <email.version>1.0.0</email.version>
         <mybatis-plus.version>3.4.3</mybatis-plus.version>
         <hutool.version>5.8.11</hutool.version>
         <jjwt.version>0.9.0</jjwt.version>
         <fastjson.version>1.2.70</fastjson.version>
+        <captcha.version>1.6.2</captcha.version>
+        <vaild.version>2.0.1.Final</vaild.version>
     </properties>
 
     <dependencies>
@@ -42,7 +44,12 @@
             <version>${fastjson.version}</version>
         </dependency>
 
-
+        <!-- Java图形验证码 -->
+        <dependency>
+            <groupId>com.github.whvcse</groupId>
+            <artifactId>easy-captcha</artifactId>
+            <version>${captcha.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -91,6 +98,12 @@
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${vaild.version}</version>
         </dependency>
 
 

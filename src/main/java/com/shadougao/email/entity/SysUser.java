@@ -27,4 +27,8 @@ public class SysUser extends BaseEntity{
      * 用户名
      */
     private String userName;
+    /**
+     * 是否启用 默认true
+     */
+    private boolean enable;
 }
