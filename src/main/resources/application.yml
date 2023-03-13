@@ -1,0 +1,44 @@
+server:
+  port: 8080
+
+spring:
+  redis:
+    database: ${REDIS_DB:0}
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PWD:123456}
+    #连接超时时间
+    timeout: 5000
+  data:
+    mongodb:
+      uri: mongodb://124.71.153.92:27017/
+    web:
+      pageable:
+        one-indexed-parameters: false
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 500MB
+
+mongo:
+  config:
+    minConnectionPerHost: 0
+    maxConnectionPerHost: 100
+    threadsAllowedToBlockForConnectionMultiplier: 5
+    serverSelectionTimeout: 30000
+    maxWaitTime: 10000
+    maxConnectionIdleTime: 1000
+    maxConnectionLifeTime: 1000
+    connectTimeout: 10000
+    socketTimeout: 5000
+    socketKeepAlive: true
+    sslEnabled: false
+    sslInvalidHostNameAllowed: false
+    alwaysUseMBeans: false
+    heartbeatFrequency: 500
+    minHeartbeatFrequency: 20000
+    heartbeatSocketTimeout: 20000
+    localThreshold: 15
+    receiveBufferSize: 0
+    sendBufferSize: 0
+
