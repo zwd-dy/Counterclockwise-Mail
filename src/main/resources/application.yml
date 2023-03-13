@@ -4,9 +4,9 @@ server:
 spring:
   redis:
     database: ${REDIS_DB:0}
-    host: ${REDIS_HOST:localhost}
+    host: ${REDIS_HOST:124.71.153.92}
     port: ${REDIS_PORT:6379}
-    password: ${REDIS_PWD:123456}
+    password: ${REDIS_PWD:(\redis*nmsl/!!)}
     #连接超时时间
     timeout: 5000
   data:
