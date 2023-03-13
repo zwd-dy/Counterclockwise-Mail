@@ -11,7 +11,8 @@ spring:
     timeout: 5000
   data:
     mongodb:
-      uri: mongodb://124.71.153.92:27017/
+#      uri: mongodb://124.71.153.92:27017/
+      uri: mongodb://email:*%2Femailasddsa#@124.71.153.92:27017/?authSource=admin
     web:
       pageable:
         one-indexed-parameters: false
