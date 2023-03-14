@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_file")
-public class File extends BaseEntity {
+public class MailFile extends BaseEntity {
     /**
      * 文件名
      */

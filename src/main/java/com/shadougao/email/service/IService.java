@@ -1,12 +1,12 @@
-package com.shadougao.email.dao;
+package com.shadougao.email.service;
 
-
+import com.shadougao.email.dao.BaseDao;
 import com.shadougao.email.entity.BaseEntity;
 import com.shadougao.email.entity.dto.PageData;
 
 import java.util.List;
 
-public interface BaseDao<T extends BaseEntity> {
+public interface IService<T extends BaseEntity> {
 
     T getOneById(String id);
 
@@ -21,6 +21,8 @@ public interface BaseDao<T extends BaseEntity> {
     T addOne(T t);
 
     T updateOne(T t, String id);
+
+    BaseDao<T> getBaseMapper();
 
     PageData<T> pageList(PageData pageData);
 

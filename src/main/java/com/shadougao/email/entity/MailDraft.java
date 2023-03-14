@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+/**
+ * 草稿邮件，待发送
+ */
 @Setter
 @Getter
 @AllArgsConstructor
@@ -28,7 +31,7 @@ public class MailDraft extends BaseEntity {
     /**
      * 收件人地址
      */
-    private String recipient;
+    private String[] recipients;
     /**
      * 附件id
      */

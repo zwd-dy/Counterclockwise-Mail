@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class SysEmailPlatformDaoImpl extends BaseDaoImpl<SysEmailPlatform> implements SysEmailPlatformDao {
     public SysEmailPlatformDaoImpl(MongoTemplate mongoTemplate) {
-        super(mongoTemplate, SysEmailPlatform.class);
+        super(mongoTemplate, SysEmailPlatform.class,"sys_email_platform");
     }
 }

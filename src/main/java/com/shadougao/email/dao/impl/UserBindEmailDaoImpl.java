@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserBindEmailDaoImpl extends BaseDaoImpl<UserBindEmail> implements UserBindEmailDao {
     public UserBindEmailDaoImpl(MongoTemplate mongoTemplate) {
-        super(mongoTemplate, UserBindEmail.class);
+        super(mongoTemplate, UserBindEmail.class,"t_user_bind_email");
     }
 }
