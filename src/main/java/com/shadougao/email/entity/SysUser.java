@@ -1,5 +1,8 @@
 package com.shadougao.email.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +16,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document("sys_user")
-public class SysUser extends BaseEntity{
+@TableName("sys_user")
+public class SysUser {
+    @TableId
+    private Integer id;
     /**
      * 登录名
      */
@@ -26,6 +31,7 @@ public class SysUser extends BaseEntity{
     /**
      * 用户名
      */
+    @TableField("user_name")
     private String userName;
     /**
      * 是否启用 默认true

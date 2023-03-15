@@ -2,6 +2,7 @@ server:
   port: 8080
 
 spring:
+#  ==== redis ====
   redis:
     database: ${REDIS_DB:0}
     host: ${REDIS_HOST:124.71.153.92}
@@ -9,6 +10,8 @@ spring:
     password: ${REDIS_PWD:(\redis*nmsl/!!)}
     #连接超时时间
     timeout: 5000
+
+#    ==== mongodb ====
   data:
     mongodb:
 #      uri: mongodb://124.71.153.92:27017/
@@ -20,6 +23,22 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 500MB
+
+#   ==== druid ====
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://124.71.153.92:3306/email?useUnicode=true&characterEncoding=utf8
+    username: nmcb
+    password: +nmcb*mysql
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 1 from dual
 
 mongo:
   config:

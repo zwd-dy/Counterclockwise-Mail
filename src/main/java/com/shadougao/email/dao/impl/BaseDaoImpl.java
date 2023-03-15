@@ -84,7 +84,7 @@ public class BaseDaoImpl<T extends BaseEntity> implements BaseDao<T> {
         Query query = new Query();
         query.with(Sort.by(Sort.Direction.ASC, "_id"));
 
-        // TODO 条件查询
+        //TODO 条件查询
 
         // 设置总数量
         pageData.setTotalNum(mongoTemplate.count(query, collectionName));
