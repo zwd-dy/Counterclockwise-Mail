@@ -32,10 +32,22 @@ public class Mail extends BaseEntity {
     /**
      * 附件id
      */
-    private String fileId;
+    private String[] fileId;
     /**
      * 用户id
      */
     private String userId;
+    /**
+     * 1.已发送    2.收件箱   3.草稿箱
+     */
+    private int type;
+    /**
+     * 收件时间
+     */
+    private String receiveTime;
+    /**
+     * 发件时间
+     */
+    private String sendTime;
 
 }
