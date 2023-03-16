@@ -1,8 +1,8 @@
 package com.shadougao.email.dao.impl;
 
+import cn.hutool.core.util.ReflectUtil;
 import com.shadougao.email.dao.BaseDao;
 import com.shadougao.email.entity.BaseEntity;
-import com.shadougao.email.entity.Mail;
 import com.shadougao.email.entity.dto.PageData;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -10,7 +10,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -77,6 +79,36 @@ public class BaseDaoImpl<T extends BaseEntity> implements BaseDao<T> {
     }
 
     @Override
+    public long updateOne(T t) {
+        Query query = new Query();
+        Update update = new Update();
+
+        // 根据id更新
+        query.addCriteria(Criteria.where("_id").is(t.getId()));
+
+        // 只更新有值的属性
+        Field[] fields = ReflectUtil.getFields(t.getClass());
+        for (Field field : fields) {
+            // 获取属性值
+            Object fieldValue = ReflectUtil.getFieldValue(t, field);
+            if (fieldValue != null) {
+                update.set(field.getName(), fieldValue);
+            }
+        }
+        return mongoTemplate.updateFirst(query,update,collectionName).getModifiedCount();
+    }
+
+    @Override
+    public T findOne(Query query) {
+        return mongoTemplate.findOne(query, entityClass, collectionName);
+    }
+
+    @Override
+    public List<T> find(Query query) {
+        return mongoTemplate.find(query, entityClass, collectionName);
+    }
+
+    @Override
     public PageData<T> pageList(PageData pageData) {
         Integer pageNum = pageData.getPageNum();
         Integer pageSize = pageData.getPageSize();
@@ -101,7 +133,7 @@ public class BaseDaoImpl<T extends BaseEntity> implements BaseDao<T> {
             T data = mails.get(mails.size() - 1);
             // 取到上一页的最后一条数据 id，当作条件查接下来的数据
             String id = data.getId();
-            // 从上一页最后一条开始查（大于不包括这一条）
+            // 从上一条最后一条开始查
             query.addCriteria(Criteria.where("_id").gt(new ObjectId(id)));
         }
 
@@ -110,6 +142,11 @@ public class BaseDaoImpl<T extends BaseEntity> implements BaseDao<T> {
         pageData.setPageData(dataList);
 
         return pageData;
+    }
+
+    @Override
+    public MongoTemplate getMongoTemplate() {
+        return this.mongoTemplate;
     }
 
 }

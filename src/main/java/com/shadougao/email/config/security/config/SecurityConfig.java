@@ -51,7 +51,7 @@ public class SecurityConfig {
                 // 匿名访问
                 .antMatchers("/login").anonymous()
                 // 所有请求都需要认证
-                .anyRequest().authenticated()
+//                .anyRequest().authenticated()
                 .and()
                 .build();
     }

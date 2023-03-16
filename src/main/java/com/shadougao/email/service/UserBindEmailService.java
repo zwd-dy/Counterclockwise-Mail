@@ -5,5 +5,15 @@ import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
 
 public interface UserBindEmailService extends IService<UserBindEmail> {
-    Result emailBind(SysUser user, UserBindEmail bindEmail);
+
+    /**
+     * 用户绑定邮箱
+     * @param bindEmail
+     * @return
+     */
+    Result emailBind(UserBindEmail bindEmail);
+
+    Result emailRemove(String id);
+
+    Result emailUpdate(UserBindEmail bindEmail);
 }

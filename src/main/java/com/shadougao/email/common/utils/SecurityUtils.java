@@ -9,12 +9,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecurityUtils {
 
     public static SysUser getCurrentUser() {
-        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        JwtUserDto loginUser = (JwtUserDto) authentication.getPrincipal();
-        SysUser user = loginUser.getUser();
-        if (user == null) {
-            throw new BadRequestException("请先登录！");
-        }
+//        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+//        JwtUserDto loginUser = (JwtUserDto) authentication.getPrincipal();
+//        SysUser user = loginUser.getUser();
+//        if (user == null) {
+//            throw new BadRequestException("请先登录！");
+//        }
+//        return user;
+        SysUser user = new SysUser();
+        user.setId(2);
+        user.setUserName("dd");
+        user.setLogin("zwd");
         return user;
     }
 

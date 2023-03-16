@@ -5,10 +5,7 @@ import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
 import com.shadougao.email.service.UserBindEmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -24,8 +21,18 @@ public class UserController {
      * @return
      */
     @PostMapping("/email/bind")
-    public Result emailBind(@RequestBody SysUser user, @RequestBody UserBindEmail bindEmail) {
-        return bindService.emailBind(user,bindEmail);
+    public Result emailBind(@RequestBody UserBindEmail bindEmail) {
+        return bindService.emailBind(bindEmail);
+    }
+
+    @PostMapping("/email/remove/{id}")
+    public Result emailRemove(@PathVariable("id") String id){
+        return bindService.emailRemove(id);
+    }
+
+    @PostMapping("/email/update")
+    public Result emailUpdate(@RequestBody UserBindEmail bindEmail){
+        return bindService.emailUpdate(bindEmail);
     }
 
 }

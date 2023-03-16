@@ -13,7 +13,6 @@ import java.util.Date;
 @Getter
 @Setter
 public class BaseEntity implements Serializable {
-
     /*
     id
      */

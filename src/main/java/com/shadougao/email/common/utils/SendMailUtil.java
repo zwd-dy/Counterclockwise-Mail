@@ -15,6 +15,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 public class SendMailUtil {
@@ -46,9 +47,31 @@ public class SendMailUtil {
         return session;
     }
 
+    public static boolean check(SysEmailPlatform platform, UserBindEmail bindEmail) {
+        Session session = connectSmtp(platform, bindEmail);
+        Transport transport = null;
+        boolean success = true;
+        try {
+            transport = session.getTransport();
+            transport.connect();
+        } catch (Exception e) {
+            success = false;
+        } finally {
+            try {
+                if (transport != null) {
+                    transport.close();
+                }
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return success;
+    }
+
+
     public static void sendEmail(SysEmailPlatform platform, UserBindEmail bindEmail, MailDraft mail) {
 
-        Session session = connectSmtp(platform,bindEmail);
+        Session session = connectSmtp(platform, bindEmail);
 
         Transport transport = null;
 
@@ -75,6 +98,7 @@ public class SendMailUtil {
             // 设置文本消息部分
             multipart.addBodyPart(messageBodyPart);
             // 附件部分
+
 //            messageBodyPart = new MimeBodyPart();
 //            String filename = "C:\\Users\\dd\\Desktop\\朱文迪.pdf";
 //            DataSource source = new FileDataSource(filename);

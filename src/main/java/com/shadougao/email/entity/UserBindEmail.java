@@ -24,7 +24,7 @@ public class UserBindEmail extends BaseEntity {
     /**
      * 用户id
      */
-    private String userId;
+    private Integer userId;
     /**
      * 登录邮箱账号
      */
