@@ -28,7 +28,7 @@ public class Mail extends BaseEntity {
     /**
      * 收件人地址
      */
-    private String recipient;
+    private String[] recipients;
     /**
      * 附件id
      */
