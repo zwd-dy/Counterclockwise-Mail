@@ -1,26 +1,34 @@
 package com.shadougao.email.common.utils;
 
 import com.shadougao.email.common.result.exception.BadRequestException;
-import com.shadougao.email.entity.SysUser;
-import com.shadougao.email.entity.dto.JwtUserDto;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import com.shadougao.email.config.security.bean.SpringContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 public class SecurityUtils {
 
-    public static SysUser getCurrentUser() {
-//        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-//        JwtUserDto loginUser = (JwtUserDto) authentication.getPrincipal();
-//        SysUser user = loginUser.getUser();
-//        if (user == null) {
-//            throw new BadRequestException("请先登录！");
-//        }
-//        return user;
-        SysUser user = new SysUser();
-        user.setId(2);
-        user.setUserName("dd");
-        user.setLogin("zwd");
-        return user;
+    public static UserDetails getCurrentUser() {
+        UserDetailsService userDetailsService = SpringContextHolder.getBean(UserDetailsService.class);
+        return userDetailsService.loadUserByUsername(getCurrentUsername());
     }
+    /**
+     * 获取系统用户名称
+     *
+     * @return 系统用户名称
+     */
+    public static String getCurrentUsername() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new BadRequestException(HttpStatus.UNAUTHORIZED, "当前登录状态过期");
+        }
+        if (authentication.getPrincipal() instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        }
+        throw new BadRequestException(HttpStatus.UNAUTHORIZED, "找不到当前登录的信息");
+    }
+
 
 }

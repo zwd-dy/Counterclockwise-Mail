@@ -8,6 +8,7 @@ import com.shadougao.email.common.utils.JwtUtil;
 import com.shadougao.email.common.utils.RedisUtil;
 import com.shadougao.email.common.utils.RsaUtils;
 import com.shadougao.email.config.RsaProperties;
+import com.shadougao.email.config.security.bean.OnlineUserService;
 import com.shadougao.email.config.security.bean.SecurityProperties;
 import com.shadougao.email.entity.dto.AuthUserDto;
 import com.shadougao.email.entity.dto.JwtUserDto;
@@ -33,6 +34,7 @@ public class AuthorizationController {
     private final SecurityProperties properties;
     private final RedisUtil redisUtil;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final OnlineUserService onlineUserService;
 
     public Result<?> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
         // 密码解密
@@ -55,7 +57,8 @@ public class AuthorizationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = JwtUtil.createToken(authentication);
         final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
-        // todo 保存在线信息
+        // 保存在线信息
+        onlineUserService.save(jwtUserDto, token, request);
         // 返回 token 与 用户信息
         Map<String, Object> authInfo = new HashMap<>(2) {{
             put("token", properties.getTokenStartWith() + token);

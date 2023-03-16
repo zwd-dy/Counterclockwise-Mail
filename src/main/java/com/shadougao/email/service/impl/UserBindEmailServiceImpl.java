@@ -2,18 +2,14 @@ package com.shadougao.email.service.impl;
 
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.exception.BadRequestException;
-import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.common.utils.SendMailUtil;
 import com.shadougao.email.dao.SysEmailPlatformDao;
 import com.shadougao.email.dao.UserBindEmailDao;
 import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
-import com.shadougao.email.entity.dto.JwtUserDto;
 import com.shadougao.email.service.UserBindEmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -33,8 +29,8 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
      */
     @Override
     public Result emailBind(UserBindEmail bindEmail) {
-        SysUser user = SecurityUtils.getCurrentUser();
-
+//        SysUser user = SecurityUtils.getCurrentUser();
+        SysUser user = new SysUser();
         SysEmailPlatform platform = platformDao.getOneById(bindEmail.getPlatformId());
         // 判断邮箱平台是否存在
         if (Objects.isNull(platform)) {
@@ -60,8 +56,8 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
 
     @Override
     public Result emailRemove(String id) {
-        SysUser user = SecurityUtils.getCurrentUser();
-
+//        SysUser user = SecurityUtils.getCurrentUser();
+        SysUser user = new SysUser();
         // 判断账号是否已绑定
         UserBindEmail bindEmail = bindEmailDao.getOneById(id);
         if (Objects.isNull(bindEmail)) {
@@ -76,8 +72,8 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
 
     @Override
     public Result emailUpdate(UserBindEmail bindEmail) {
-        SysUser user = SecurityUtils.getCurrentUser();
-
+//        SysUser user = SecurityUtils.getCurrentUser();
+        SysUser user = new SysUser();
         // 判断账号是否已绑定
         if (Objects.isNull(bindEmailDao.getOneById(bindEmail.getId()))) {
             throw new BadRequestException("修改失败，你似乎没有绑定该邮箱");

@@ -4,9 +4,6 @@ import com.shadougao.email.entity.Mail;
 import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.UserBindEmail;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -14,7 +11,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
 public class SendMailUtil {
