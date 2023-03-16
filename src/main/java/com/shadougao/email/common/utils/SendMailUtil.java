@@ -1,7 +1,6 @@
 package com.shadougao.email.common.utils;
 
 import com.shadougao.email.entity.Mail;
-import com.shadougao.email.entity.MailDraft;
 import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.UserBindEmail;
 
@@ -69,7 +68,7 @@ public class SendMailUtil {
     }
 
 
-    public static void sendEmail(SysEmailPlatform platform, UserBindEmail bindEmail, MailDraft mail) {
+    public static void sendEmail(SysEmailPlatform platform, UserBindEmail bindEmail, Mail mail) {
 
         Session session = connectSmtp(platform, bindEmail);
 

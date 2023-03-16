@@ -7,28 +7,20 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * 用户通讯录
+ * 通讯录分组
  */
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document("t_address_book")
-public class AddressBook extends BaseEntity {
+@Document("t_address_book_group")
+public class AddressBookGroup extends BaseEntity {
     /**
-     * 邮箱账号
-     */
-    private String emailAddress;
-    /**
-     * 通讯录名字
+     * 分组名
      */
     private String name;
     /**
      * 用户id
      */
     private String userId;
-    /**
-     * 分组Id
-     */
-    private String groupId;
 }
