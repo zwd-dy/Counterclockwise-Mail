@@ -47,9 +47,9 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers().permitAll()
+                .antMatchers("/**/**").permitAll()
                 // 匿名访问
-                .antMatchers("/login").anonymous()
+//                .antMatchers("/login").anonymous()
                 // 所有请求都需要认证
 //                .anyRequest().authenticated()
                 .and()
