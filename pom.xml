@@ -33,6 +33,8 @@
         <druid.version>1.2.11</druid.version>
         <mysql.version>8.0.29</mysql.version>
         <mybatis.version>3.0.0</mybatis.version>
+        <ip2region.version>2.6.3</ip2region.version>
+        <yauaa.version>6.11</yauaa.version>
     </properties>
 
     <dependencies>
@@ -78,6 +80,21 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- ip2region IP库 -->
+        <dependency>
+            <groupId>net.dreamlu</groupId>
+            <artifactId>mica-ip2region</artifactId>
+            <version>${ip2region.version}</version>
+        </dependency>
+
+        <!-- 解析客户端操作系统、浏览器信息 -->
+        <dependency>
+            <groupId>nl.basjes.parse.useragent</groupId>
+            <artifactId>yauaa</artifactId>
+            <version>${yauaa.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
