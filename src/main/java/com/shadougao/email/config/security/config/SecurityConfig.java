@@ -2,9 +2,11 @@ package com.shadougao.email.config.security.config;
 
 
 import com.shadougao.email.common.utils.RequestMethodEnum;
-import com.shadougao.email.config.security.auth.AnonymousAccess;
-import com.shadougao.email.config.security.auth.JwtAccessDeniedHandler;
-import com.shadougao.email.config.security.auth.JwtAuthenticationEntryPoint;
+import com.shadougao.email.common.utils.TokenProvider;
+import com.shadougao.email.config.security.auth.*;
+import com.shadougao.email.config.security.bean.OnlineUserService;
+import com.shadougao.email.config.security.bean.SecurityProperties;
+import com.shadougao.email.config.security.bean.UserCacheClean;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -19,8 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
@@ -39,6 +39,10 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final ApplicationContext applicationContext;
     private final CorsFilter corsFilter;
+    private final TokenProvider tokenProvider;
+    private final SecurityProperties properties;
+    private final OnlineUserService onlineUserService;
+    private final UserCacheClean userCacheClean;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -79,8 +83,12 @@ public class SecurityConfig {
                 .antMatchers(anonymousUrls.get(RequestMethodEnum.ALL.getType()).toArray(new String[0])).permitAll()
                 // 所有请求都需要认证
                 .anyRequest().authenticated()
-                .and()
-                .build();
+                .and().apply(securityConfigurerAdapter()).and().build();
+    }
+
+    // jwt 过滤
+    private TokenConfigurer securityConfigurerAdapter() {
+        return new TokenConfigurer(properties, onlineUserService, tokenProvider, userCacheClean);
     }
 
     @Bean

@@ -2,7 +2,6 @@ package com.shadougao.email.web.controller;
 
 
 import com.shadougao.email.common.result.Result;
-import com.shadougao.email.common.utils.JwtUtil;
 import com.shadougao.email.common.utils.RedisUtil;
 import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.common.utils.TokenProvider;
@@ -18,14 +17,17 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthorizationController {
 
