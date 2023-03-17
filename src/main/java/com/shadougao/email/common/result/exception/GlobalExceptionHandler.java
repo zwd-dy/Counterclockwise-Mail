@@ -2,6 +2,7 @@ package com.shadougao.email.common.result.exception;
 
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.ResultEnum;
+import com.shadougao.email.common.utils.ThrowableUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,13 +15,23 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
 
     /**
+     * 处理所有不可知的异常
+     */
+    @ExceptionHandler(Throwable.class)
+    public Result<?> handleException(Throwable e) {
+        // 打印堆栈信息
+        log.error(ThrowableUtil.getStackTrace(e));
+        return buildResponseEntity(ResultEnum.ERROR, e.getMessage());
+    }
+
+    /**
      * BadCredentialsException
      */
     @ExceptionHandler(BadCredentialsException.class)
     public Result<?> badCredentialsException(BadCredentialsException e) {
         // 打印堆栈信息
         String message = "坏的凭证".equals(e.getMessage()) ? "用户名或密码不正确" : e.getMessage();
-        // todo log
+        log.error(message);
         return buildResponseEntity(ResultEnum.USER_NOT_AUTH, message);
     }
 

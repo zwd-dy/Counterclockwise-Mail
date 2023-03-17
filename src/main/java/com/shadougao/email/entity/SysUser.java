@@ -1,5 +1,6 @@
 package com.shadougao.email.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -24,15 +25,17 @@ public class SysUser {
      * 登录名
      */
     private String login;
+
     /**
      * 登录密码
      */
+    @JSONField(serialize = false)
     private String password;
+
     /**
      * 用户名
      */
-    @TableField("user_name")
-    private String userName;
+    private String username;
     /**
      * 是否启用 默认true
      */

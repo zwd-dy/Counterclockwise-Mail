@@ -4,6 +4,10 @@ package com.shadougao.email.web.controller;
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.utils.JwtUtil;
 import com.shadougao.email.common.utils.RedisUtil;
+import com.shadougao.email.common.utils.SecurityUtils;
+import com.shadougao.email.common.utils.TokenProvider;
+import com.shadougao.email.config.security.auth.rest.AnonymousDeleteMapping;
+import com.shadougao.email.config.security.auth.rest.AnonymousPostMapping;
 import com.shadougao.email.config.security.bean.OnlineUserService;
 import com.shadougao.email.config.security.bean.SecurityProperties;
 import com.shadougao.email.entity.dto.AuthUserDto;
@@ -14,27 +18,25 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthorizationController {
 
     private final SecurityProperties properties;
     private final RedisUtil redisUtil;
+    private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final OnlineUserService onlineUserService;
 
-    @PostMapping
-    public Result<?> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
+    @AnonymousPostMapping("/login")
+    public Result<?> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) {
         // 密码解密
 //        String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, authUser.getPassword());
 
@@ -53,7 +55,7 @@ public class AuthorizationController {
         Authentication authentication;
         authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = JwtUtil.createToken(authentication);
+        String token = tokenProvider.createToken(authentication);
         final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
         // 保存在线信息
         onlineUserService.save(jwtUserDto, token, request);
@@ -63,5 +65,16 @@ public class AuthorizationController {
             put("user", jwtUserDto);
         }};
         return Result.success(authInfo);
+    }
+
+    @GetMapping(value = "/info")
+    public Result<?> getUserInfo() {
+        return Result.success(SecurityUtils.getCurrentUser());
+    }
+
+    @AnonymousDeleteMapping(value = "/logout")
+    public Result<?> logout(HttpServletRequest request) {
+        onlineUserService.logout(tokenProvider.getToken(request));
+        return Result.success();
     }
 }

@@ -4,7 +4,7 @@
 <mapper namespace="com.shadougao.email.sys.mapper.SysUserMapper">
 
     <select id="findbyUsername" resultType="com.shadougao.email.entity.SysUser">
-        select * from sys_user where user_name = ${username}
+        select * from sys_user where username = ${username}
     </select>
 
 </mapper>

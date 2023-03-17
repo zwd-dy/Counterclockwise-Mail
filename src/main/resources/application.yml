@@ -1,7 +1,5 @@
 server:
   port: 8080
-  servlet:
-    context-path: /email
 
 spring:
 #  ==== redis ====
@@ -28,12 +26,12 @@ spring:
 
 #   ==== druid ====
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://124.71.153.92:3306/email?useUnicode=true&characterEncoding=utf8
-    username: nmcb
-    password: +nmcb*mysql
-    type: com.alibaba.druid.pool.DruidDataSource
     druid:
+      db-type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://124.71.153.92:3306/email?useUnicode=true&characterEncoding=utf8
+      username: nmcb
+      password: +nmcb*mysql
       initial-size: 5
       min-idle: 5
       max-active: 20

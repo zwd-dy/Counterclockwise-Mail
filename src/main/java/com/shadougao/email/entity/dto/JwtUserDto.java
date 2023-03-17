@@ -36,7 +36,7 @@ public class JwtUserDto implements UserDetails {
     @Override
     @JSONField(serialize = false)
     public String getUsername() {
-        return user.getUserName();
+        return user.getUsername();
     }
 
     @JSONField(serialize = false)

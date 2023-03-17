@@ -1,5 +1,6 @@
 package com.shadougao.email.config.security.bean;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.dto.JwtUserDto;
@@ -28,16 +29,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public JwtUserDto loadUserByUsername(String username) {
-        JwtUserDto jwtUserDto = null;
+        JwtUserDto jwtUserDto;
         SysUser user;
         try {
-            user = userMapper.findByUsername(username);
+            QueryWrapper<SysUser> query = new QueryWrapper<>();
+            query.eq("username", username);
+            user = userMapper.selectOne(query);
         } catch (BadRequestException e) {
             // SpringSecurity会自动转换UsernameNotFoundException为BadCredentialsException
-            throw new UsernameNotFoundException("", e);
+            throw new BadRequestException(e.getMessage());
         }
         if (user == null) {
-            throw new UsernameNotFoundException("账号或密码错误");
+            throw new UsernameNotFoundException("用户名或密码错误");
         } else {
             if (!user.isEnable()) {
                 throw new BadRequestException("账号未激活！");
