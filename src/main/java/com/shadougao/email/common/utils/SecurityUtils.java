@@ -2,6 +2,8 @@ package com.shadougao.email.common.utils;
 
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.config.security.bean.SpringContextHolder;
+import com.shadougao.email.entity.SysUser;
+import com.shadougao.email.entity.dto.JwtUserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,9 +12,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public class SecurityUtils {
 
-    public static UserDetails getCurrentUser() {
+//    public static UserDetails getCurrentUser() {
+//        UserDetailsService userDetailsService = SpringContextHolder.getBean(UserDetailsService.class);
+//        return userDetailsService.loadUserByUsername(getCurrentUsername());
+//    }
+
+    public static SysUser getCurrentUser() {
         UserDetailsService userDetailsService = SpringContextHolder.getBean(UserDetailsService.class);
-        return userDetailsService.loadUserByUsername(getCurrentUsername());
+        JwtUserDto jwtUserDto = (JwtUserDto) userDetailsService.loadUserByUsername(getCurrentUsername());
+        return jwtUserDto.getUser();
     }
     /**
      * 获取系统用户名称

@@ -62,4 +62,8 @@ public class JwtUserDto implements UserDetails {
     public boolean isEnabled() {
         return user.isEnable();
     }
+
+    public SysUser getUser() {
+        return user;
+    }
 }

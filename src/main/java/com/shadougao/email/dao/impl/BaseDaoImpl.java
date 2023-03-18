@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -95,7 +96,7 @@ public class BaseDaoImpl<T extends BaseEntity> implements BaseDao<T> {
                 update.set(field.getName(), fieldValue);
             }
         }
-        return mongoTemplate.updateFirst(query,update,collectionName).getModifiedCount();
+        return mongoTemplate.updateFirst(query, update, collectionName).getModifiedCount();
     }
 
     @Override
@@ -109,15 +110,33 @@ public class BaseDaoImpl<T extends BaseEntity> implements BaseDao<T> {
     }
 
     @Override
-    public PageData<T> pageList(PageData pageData) {
+    public PageData<T> pageList(PageData pageData, T entity) {
         Integer pageNum = pageData.getPageNum();
         Integer pageSize = pageData.getPageSize();
 
         Query query = new Query();
         query.with(Sort.by(Sort.Direction.ASC, "_id"));
 
-        //TODO 条件查询
 
+        // 条件查询
+        if (entity != null) {
+            Criteria criteria = new Criteria();
+            Field[] fields = ReflectUtil.getFields(entity.getClass());
+
+            for (Field field : fields) {
+                // 忽略 create_time和id的条件查询
+                if ("create_time".equals(field.getName()) || "id".equals(field.getName())) {
+                    continue;
+                }
+                // 获取属性值
+                Object fieldValue = ReflectUtil.getFieldValue(entity, field);
+                if (fieldValue != null && fieldValue != "") {
+                    // 存在值即条件查询
+                    criteria = criteria.and(field.getName()).is(fieldValue);
+                }
+            }
+            query.addCriteria(criteria);
+        }
         // 设置总数量
         pageData.setTotalNum(mongoTemplate.count(query, collectionName));
         // 设置总页数
@@ -131,10 +150,10 @@ public class BaseDaoImpl<T extends BaseEntity> implements BaseDao<T> {
 
             // 取出最后一条
             T data = mails.get(mails.size() - 1);
-            // 取到上一页的最后一条数据 id，当作条件查接下来的数据
+            // 取到上一页的最后一条id
             String id = data.getId();
             // 从上一条最后一条开始查
-            query.addCriteria(Criteria.where("_id").gt(new ObjectId(id)));
+            query.addCriteria(Criteria.where("_id").gt(id));
         }
 
         query.limit(pageSize);

@@ -17,6 +17,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmailApplication {
     public static void main(String[] args) {
         SpringApplication.run(EmailApplication.class, args);
+        System.out.println(
+                " ███▄    █    ███▄ ▄███▓   ▄████▄     ▄▄▄▄\n" +
+                " ██ ▀█   █   ▓██▒▀█▀ ██▒  ▒██▀ ▀█    ▓█████▄\n" +
+                "▓██  ▀█ ██  ▒▓██    ▓██░  ▒▓█    ▄   ▒██▒ ▄██\n" +
+                "▓██▒  ▐▌██  ▒▒██    ▒██   ▒▓▓▄ ▄██  ▒▒██░█▀\n" +
+                "▒██░   ▓██  ░▒██▒   ░██▒  ▒ ▓███▀   ░░▓█  ▀█▓\n" +
+                "░ ▒░   ▒ ▒   ░ ▒░   ░  ░  ░ ░▒ ▒    ░░▒▓███▀▒\n" +
+                "░ ░░   ░ ▒  ░░  ░      ░    ░  ▒     ▒░▒   ░\n" +
+                "   ░   ░ ░   ░      ░     ░           ░    ░\n" +
+                "         ░          ░     ░ ░         ░\n" +
+                "                      ░                  ░\n" +
+                "                                 Author:  miku & dd\n"
+        );
     }
 
     @Bean

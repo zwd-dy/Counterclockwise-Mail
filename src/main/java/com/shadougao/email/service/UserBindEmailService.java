@@ -16,4 +16,7 @@ public interface UserBindEmailService extends IService<UserBindEmail> {
     Result emailRemove(String id);
 
     Result emailUpdate(UserBindEmail bindEmail);
+
+    Result emailBindList();
+
 }

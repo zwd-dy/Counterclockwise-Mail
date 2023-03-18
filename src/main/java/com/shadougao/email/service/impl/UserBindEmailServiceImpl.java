@@ -2,16 +2,20 @@ package com.shadougao.email.service.impl;
 
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.exception.BadRequestException;
+import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.common.utils.SendMailUtil;
 import com.shadougao.email.dao.SysEmailPlatformDao;
 import com.shadougao.email.dao.UserBindEmailDao;
 import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
+import com.shadougao.email.entity.dto.JwtUserDto;
 import com.shadougao.email.service.UserBindEmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -29,8 +33,8 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
      */
     @Override
     public Result emailBind(UserBindEmail bindEmail) {
-//        SysUser user = SecurityUtils.getCurrentUser();
-        SysUser user = new SysUser();
+        SysUser user = SecurityUtils.getCurrentUser();
+
         SysEmailPlatform platform = platformDao.getOneById(bindEmail.getPlatformId());
         // 判断邮箱平台是否存在
         if (Objects.isNull(platform)) {
@@ -56,8 +60,6 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
 
     @Override
     public Result emailRemove(String id) {
-//        SysUser user = SecurityUtils.getCurrentUser();
-        SysUser user = new SysUser();
         // 判断账号是否已绑定
         UserBindEmail bindEmail = bindEmailDao.getOneById(id);
         if (Objects.isNull(bindEmail)) {
@@ -72,8 +74,6 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
 
     @Override
     public Result emailUpdate(UserBindEmail bindEmail) {
-//        SysUser user = SecurityUtils.getCurrentUser();
-        SysUser user = new SysUser();
         // 判断账号是否已绑定
         if (Objects.isNull(bindEmailDao.getOneById(bindEmail.getId()))) {
             throw new BadRequestException("修改失败，你似乎没有绑定该邮箱");
@@ -89,6 +89,14 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
             throw new BadRequestException("修改失败，请重新操作");
         }
         return Result.success("修改成功");
+    }
+
+    @Override
+    public Result emailBindList() {
+        SysUser user = SecurityUtils.getCurrentUser();
+
+        List<UserBindEmail> bindEmails = bindEmailDao.emailBindList(user.getId());
+        return Result.success(bindEmails);
     }
 
 }

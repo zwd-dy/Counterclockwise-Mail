@@ -3,8 +3,10 @@ package com.shadougao.email.web.controller;
 
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.utils.RedisUtil;
+import com.shadougao.email.common.utils.RsaUtils;
 import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.common.utils.TokenProvider;
+import com.shadougao.email.config.RsaProperties;
 import com.shadougao.email.config.security.auth.rest.AnonymousDeleteMapping;
 import com.shadougao.email.config.security.auth.rest.AnonymousPostMapping;
 import com.shadougao.email.config.security.bean.OnlineUserService;
@@ -38,9 +40,9 @@ public class AuthorizationController {
     private final OnlineUserService onlineUserService;
 
     @AnonymousPostMapping("/login")
-    public Result<?> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) {
+    public Result<?> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
         // 密码解密
-//        String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, authUser.getPassword());
+        String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, authUser.getPassword());
 
         // 查询验证码
 //        String code = (String) redisUtil.get(authUser.getUuid());
@@ -53,7 +55,7 @@ public class AuthorizationController {
 //            throw new BadRequestException("验证码错误");
 //        }
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(authUser.getUsername(), authUser.getPassword());
+                new UsernamePasswordAuthenticationToken(authUser.getUsername(), password);
         Authentication authentication;
         authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);

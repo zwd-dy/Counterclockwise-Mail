@@ -1,7 +1,9 @@
 package com.shadougao.email.service.impl;
 
+import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.dao.BaseDao;
 import com.shadougao.email.entity.BaseEntity;
+import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.dto.PageData;
 import com.shadougao.email.service.IService;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +57,8 @@ public class ServiceImpl<M extends BaseDao<T>,T extends BaseEntity> implements I
     }
 
     @Override
-    public PageData<T> pageList(PageData pageData) {
-        return baseMapper.pageList(pageData);
+    public PageData<T> pageList(PageData pageData,T entity) {
+        return baseMapper.pageList(pageData,entity);
     }
+
 }

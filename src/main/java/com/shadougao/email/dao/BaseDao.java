@@ -35,7 +35,7 @@ public interface BaseDao<T extends BaseEntity> {
 
     List<T> find(Query query);
 
-    PageData<T> pageList(PageData pageData);
+    PageData<T> pageList(PageData pageData,T entity);
 
     MongoTemplate getMongoTemplate();
 

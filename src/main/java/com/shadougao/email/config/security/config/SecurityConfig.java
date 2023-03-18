@@ -97,7 +97,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
     private Map<String, Set<String>> getAnonymousUrl(Map<RequestMappingInfo, HandlerMethod> handlerMethodMap) {
         Map<String, Set<String>> anonymousUrls = new HashMap<>(6);
         Set<String> get = new HashSet<>();

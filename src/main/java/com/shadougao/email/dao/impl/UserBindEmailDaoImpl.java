@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class UserBindEmailDaoImpl extends BaseDaoImpl<UserBindEmail> implements UserBindEmailDao {
     public UserBindEmailDaoImpl(MongoTemplate mongoTemplate) {
@@ -19,5 +21,12 @@ public class UserBindEmailDaoImpl extends BaseDaoImpl<UserBindEmail> implements 
         Query query = new Query();
         query.addCriteria(Criteria.where("emailUser").is(emailUser).and("userId").is(userId));
        return this.findOne(query);
+    }
+
+    @Override
+    public List<UserBindEmail> emailBindList(Integer id) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(("userId")).is(id));
+        return this.find(query);
     }
 }

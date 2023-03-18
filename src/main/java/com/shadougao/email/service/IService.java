@@ -24,6 +24,6 @@ public interface IService<T extends BaseEntity> {
 
     BaseDao<T> getBaseMapper();
 
-    PageData<T> pageList(PageData pageData);
+    PageData<T> pageList(PageData pageData,T entity);
 
 }
