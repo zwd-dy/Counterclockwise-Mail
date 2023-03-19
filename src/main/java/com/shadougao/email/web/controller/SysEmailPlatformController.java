@@ -14,17 +14,16 @@ public class SysEmailPlatformController {
     private final UserBindEmailService bindService;
 
     @GetMapping("/bind/list")
-    public Result emailBindList(){
+    public Result<?> emailBindList(){
         return bindService.emailBindList();
     }
     /**
      * 邮箱平台绑定
-     * @param user         用户信息
      * @param bindEmail    绑定信息
      * @return
      */
     @PostMapping("/bind")
-    public Result emailBind(@RequestBody UserBindEmail bindEmail) {
+    public Result<?> emailBind(@RequestBody UserBindEmail bindEmail) {
         return bindService.emailBind(bindEmail);
     }
 
@@ -34,7 +33,7 @@ public class SysEmailPlatformController {
      * @return
      */
     @DeleteMapping("/remove/{id}")
-    public Result emailRemove(@PathVariable("id") String id){
+    public Result<?> emailRemove(@PathVariable("id") String id){
         return bindService.emailRemove(id);
     }
 
@@ -44,7 +43,7 @@ public class SysEmailPlatformController {
      * @return
      */
     @PostMapping("/update")
-    public Result emailUpdate(@RequestBody UserBindEmail bindEmail){
+    public Result<?> emailUpdate(@RequestBody UserBindEmail bindEmail){
         return bindService.emailUpdate(bindEmail);
     }
 

@@ -8,7 +8,6 @@ import com.shadougao.email.entity.dto.PageData;
 import com.shadougao.email.service.AddressBookGroupService;
 import com.shadougao.email.service.AddressBookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class AddressBookController {
      * @return
      */
     @GetMapping("/pageList")
-    public Result pageList(PageData pageData, AddressBook addressBook) {
+    public Result<?> pageList(PageData pageData, AddressBook addressBook) {
         return Result.success(addressBookService.pageList(pageData, addressBook));
     }
 
@@ -41,7 +40,7 @@ public class AddressBookController {
      * @return
      */
     @PostMapping("/addContact")
-    public Result addContact(@RequestBody AddressBook addressBook) {
+    public Result<?> addContact(@RequestBody AddressBook addressBook) {
         return addressBookService.addContact(addressBook);
     }
 
@@ -52,7 +51,7 @@ public class AddressBookController {
      * @return
      */
     @DeleteMapping("/delete/{id}")
-    public Result delContact(@PathVariable("id") String id) {
+    public Result<?> delContact(@PathVariable("id") String id) {
         return addressBookService.delContact(id);
     }
 
@@ -61,7 +60,7 @@ public class AddressBookController {
      * @return
      */
     @GetMapping("/group/list")
-    public Result listGroup() {
+    public Result<?> listGroup() {
         return Result.success(groupService.getBaseMapper().find(
                 new Query()
                         .addCriteria(Criteria
@@ -77,7 +76,7 @@ public class AddressBookController {
      * @return
      */
     @PostMapping("/addGroup")
-    public Result addGroup(@RequestBody AddressBookGroup group) {
+    public Result<?> addGroup(@RequestBody AddressBookGroup group) {
         return groupService.addGroup(group);
     }
 
@@ -88,7 +87,7 @@ public class AddressBookController {
      * @return
      */
     @DeleteMapping("/group/delete/{id}")
-    public Result deleteGroup(@PathVariable String id) {
+    public Result<?> deleteGroup(@PathVariable String id) {
         return groupService.delGroup(id);
     }
 
@@ -100,7 +99,7 @@ public class AddressBookController {
      * @return
      */
     @PostMapping("/addToGroup/{id}/{groupId}")
-    public Result addToGroup(@PathVariable("id") String id, @PathVariable("groupId") String groupId) {
+    public Result<?> addToGroup(@PathVariable("id") String id, @PathVariable("groupId") String groupId) {
         return addressBookService.addToGroup(id, groupId);
     }
 
@@ -111,7 +110,7 @@ public class AddressBookController {
      * @return
      */
     @DeleteMapping("/delToGroup/{id}")
-    public Result delToGroup(@PathVariable("id") String id) {
+    public Result<?> delToGroup(@PathVariable("id") String id) {
         return addressBookService.delToGroup(id);
     }
 

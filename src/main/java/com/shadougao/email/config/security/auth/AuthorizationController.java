@@ -1,4 +1,4 @@
-package com.shadougao.email.web.controller;
+package com.shadougao.email.config.security.auth;
 
 
 import com.shadougao.email.common.result.Result;

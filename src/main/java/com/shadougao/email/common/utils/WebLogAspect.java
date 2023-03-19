@@ -26,7 +26,7 @@ import java.util.Arrays;
 @Component
 public class WebLogAspect {
 
-    @Pointcut("execution(public * com.shadougao.*.controller.*.*(..)))")
+    @Pointcut("execution(public * com.shadougao.email.web.controller.*.*(..)))")
     public void webLog() {
 
     }
