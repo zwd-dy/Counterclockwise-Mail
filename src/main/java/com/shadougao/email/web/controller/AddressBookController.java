@@ -33,7 +33,7 @@ public class AddressBookController {
      * @return
      */
     @GetMapping("/pageList")
-    public Result<?> pageList(PageData pageData, AddressBook addressBook) {
+    public Result<?> pageList(PageData<AddressBook> pageData, AddressBook addressBook) {
         return Result.success(addressBookService.pageList(pageData, addressBook));
     }
 
