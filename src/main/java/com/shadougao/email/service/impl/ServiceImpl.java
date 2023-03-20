@@ -52,6 +52,11 @@ public class ServiceImpl<M extends BaseDao<T>,T extends BaseEntity> implements I
     }
 
     @Override
+    public long updateOne(T t) {
+        return baseMapper.updateOne(t);
+    }
+
+    @Override
     public BaseDao<T> getBaseMapper() {
         return baseMapper;
     }

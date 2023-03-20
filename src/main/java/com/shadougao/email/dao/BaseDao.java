@@ -24,6 +24,8 @@ public interface BaseDao<T extends BaseEntity> {
 
     T updateOne(T t, String id);
 
+
+
     /**
      * 只更新有值的属性
      * @param t

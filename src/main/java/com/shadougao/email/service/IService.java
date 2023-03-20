@@ -22,6 +22,8 @@ public interface IService<T extends BaseEntity> {
 
     T updateOne(T t, String id);
 
+    long updateOne(T t);
+
     BaseDao<T> getBaseMapper();
 
     PageData<T> pageList(PageData pageData,T entity);

@@ -2,6 +2,7 @@ server:
   port: 8080
 
 spring:
+
 #  ==== redis ====
   redis:
     database: 0
@@ -11,7 +12,7 @@ spring:
     #连接超时时间
     timeout: 5000
 
-#    ==== mongodb ====
+  #    ==== mongodb ====
   data:
     mongodb:
 #      uri: mongodb://124.71.153.92:27017/

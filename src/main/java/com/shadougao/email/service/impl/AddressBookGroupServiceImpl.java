@@ -36,6 +36,7 @@ public class AddressBookGroupServiceImpl extends ServiceImpl<AddressBookGroupDao
         }
 
         // 添加分组
+        group.setUserId(user.getId());
         return Result.success(this.addOne(group));
     }
 

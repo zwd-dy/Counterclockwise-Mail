@@ -44,6 +44,7 @@ public class SecurityConfig {
     private final OnlineUserService onlineUserService;
     private final UserCacheClean userCacheClean;
 
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         // 搜寻匿名标记 url： @AnonymousAccess

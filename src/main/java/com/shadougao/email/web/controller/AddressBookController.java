@@ -1,6 +1,7 @@
 package com.shadougao.email.web.controller;
 
 import com.shadougao.email.common.result.Result;
+import com.shadougao.email.common.result.ResultEnum;
 import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.entity.AddressBook;
 import com.shadougao.email.entity.AddressBookGroup;
@@ -11,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/contacts")
@@ -56,7 +60,22 @@ public class AddressBookController {
     }
 
     /**
+     * 联系人批量删除
+     *
+     * @param ids
+     * @return
+     */
+    @DeleteMapping("/batchDelete")
+    public Result<?> batchDelete(@RequestBody List<AddressBook> addressBooks) {
+        List<String> ids = new ArrayList<>();
+        addressBooks.forEach(book -> ids.add(book.getId()));
+        addressBookService.batchDel(ids);
+        return Result.success();
+    }
+
+    /**
      * 分组列表
+     *
      * @return
      */
     @GetMapping("/group/list")
@@ -101,6 +120,24 @@ public class AddressBookController {
     @PostMapping("/addToGroup/{id}/{groupId}")
     public Result<?> addToGroup(@PathVariable("id") String id, @PathVariable("groupId") String groupId) {
         return addressBookService.addToGroup(id, groupId);
+    }
+
+    /**
+     * 批量添加联系人到分组
+     *
+     * @param id
+     * @param groupId
+     * @return
+     */
+    @PostMapping("/batchAddToGroup/{id}")
+    public Result<?> batchAddToGroup(@RequestBody List<AddressBook> addressBooks, @PathVariable("id") String groupId) {
+        long size = addressBooks.size();
+        long num = 0;
+        for (AddressBook addressBook : addressBooks) {
+            addressBook.setGroupId(groupId);
+            num += addressBookService.updateOne(addressBook);
+        }
+        return (num == size ? Result.success() : Result.error(ResultEnum.ERROR, "未知错误"));
     }
 
     /**

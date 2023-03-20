@@ -2,6 +2,7 @@ package com.shadougao.email.web.controller;
 
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.entity.UserBindEmail;
+import com.shadougao.email.service.SysEmailPlatformService;
 import com.shadougao.email.service.UserBindEmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,17 @@ import org.springframework.web.bind.annotation.*;
 public class SysEmailPlatformController {
 
     private final UserBindEmailService bindService;
+    private final SysEmailPlatformService platformService;
+
+
+    /**
+     * 列出支持邮箱平台列表
+     * @return
+     */
+    @GetMapping("/listPlatform")
+    public Result<?> listPlatform() {
+        return Result.success(platformService.getAll());
+    }
 
     @GetMapping("/bind/list")
     public Result<?> emailBindList(){
