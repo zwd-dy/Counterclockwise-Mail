@@ -4,11 +4,10 @@ import com.shadougao.email.entity.Mail;
 import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.UserBindEmail;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -84,16 +83,45 @@ public class SendMailUtil {
             message.setSubject(mail.getSubject(), "UTF-8");
 
 
-            // 创建消息部分
-            BodyPart messageBodyPart = new MimeBodyPart();
-            // 消息
-            messageBodyPart.setContent(mail.getContent(), "text/html;charset=gbk");
-            // 创建多重消息
-            Multipart multipart = new MimeMultipart();
-            // 设置文本消息部分
-            multipart.addBodyPart(messageBodyPart);
-            // 附件部分
+            // 构建混合邮件块，附件+邮件
+            MimeMultipart mixed = new MimeMultipart("mixed");
 
+            // 附件部分
+            MimeBodyPart file_body = new MimeBodyPart();
+            DataHandler dhFile = new DataHandler(new FileDataSource("C:\\Users\\admin\\Desktop\\朱文迪.pdf"));
+            file_body.setDataHandler(dhFile); //设置dhFile附件处理
+//            file_body.setContentID("fileA");  //设置资源附件名称ID
+            file_body.setFileName(MimeUtility.encodeText("朱文迪.pdf"));   //设置中文附件名称
+            // 先把附件资源混合到 mixed多资源邮件模块里
+            mixed.addBodyPart(file_body);
+
+
+            // 5.3：创建主体内容资源存储对象
+            MimeBodyPart content = new MimeBodyPart();
+            // 把主体内容混合到mixed资源存储对象里
+            mixed.addBodyPart(content);
+            // 构建一个多资源的邮件块 用来把 文本内容资源 和 图片资源合并
+            MimeMultipart text_img_related = new MimeMultipart("related");
+            content.setContent(text_img_related);
+
+            // 图片部分
+            MimeBodyPart img_body = new MimeBodyPart();
+            DataHandler dhImg = new DataHandler(new FileDataSource("C:\\Users\\admin\\Pictures\\screenshots\\1.png"));
+            img_body.setDataHandler(dhImg); //设置dhImg图片处理
+            img_body.setContentID("imgA");  //设置资源图片名称ID
+
+
+
+
+            // 创建文本部分
+            MimeBodyPart text_body = new MimeBodyPart();
+            text_body.setContent(mail.getContent(),"text/html;charset=UTF-8");
+
+            // 合并资源
+            text_img_related.addBodyPart(text_body);
+            text_img_related.addBodyPart(img_body);
+
+            // 附件部分
 //            messageBodyPart = new MimeBodyPart();
 //            String filename = "C:\\Users\\dd\\Desktop\\朱文迪.pdf";
 //            DataSource source = new FileDataSource(filename);
@@ -102,7 +130,9 @@ public class SendMailUtil {
 //            multipart.addBodyPart(messageBodyPart);
 
             // 发送完整消息
-            message.setContent(multipart);
+            message.setContent(mixed);
+            // 保存上面设置的邮件内容
+            message.saveChanges();
             // 发送:
             transport.connect();
             transport.sendMessage(message, message.getAllRecipients());
