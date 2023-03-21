@@ -22,5 +22,5 @@ public class AddressBookGroup extends BaseEntity {
     /**
      * 用户id
      */
-    private Integer userId;
+    private String userId;
 }

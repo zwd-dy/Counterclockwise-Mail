@@ -4,6 +4,6 @@ import com.shadougao.email.entity.AddressBook;
 
 public interface AddressBookDao extends BaseDao<AddressBook> {
 
-    AddressBook getOneByEmailUser(Integer userId,String email);
+    AddressBook getOneByEmailUser(String userId,String email);
 
 }

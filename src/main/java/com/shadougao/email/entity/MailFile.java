@@ -16,7 +16,7 @@ public class MailFile extends BaseEntity {
     /**
      * 文件大小
      */
-    private String size;
+    private long size;
     /**
      * 文件格式
      */
@@ -29,6 +29,14 @@ public class MailFile extends BaseEntity {
      * 上传者
      */
     private String uploader;
+    /**
+     * 绝对路径
+     */
+    private String absolutePath;
+    /**
+     * 相对路径
+     */
+    private String relativePath;
     /**
      * md5校验
      */

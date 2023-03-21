@@ -26,7 +26,7 @@ public class AddressBook extends BaseEntity {
     /**
      * 用户id
      */
-    private Integer userId;
+    private String userId;
     /**
      * 分组Id
      */

@@ -14,7 +14,7 @@ public class AddressBookDaoImpl extends BaseDaoImpl<AddressBook> implements Addr
     }
 
     @Override
-    public AddressBook getOneByEmailUser(Integer userId, String email) {
+    public AddressBook getOneByEmailUser(String userId, String email) {
         Query query = new Query();
         query.addCriteria(Criteria.where("userId").is(userId).and("emailAddress").is(email));
         return this.findOne(query);
