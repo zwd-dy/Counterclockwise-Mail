@@ -10,6 +10,7 @@ import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
 import com.shadougao.email.entity.dto.JwtUserDto;
+import com.shadougao.email.execute.SendMailExecute;
 import com.shadougao.email.service.UserBindEmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,7 +46,7 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
             throw new BadRequestException("该邮箱账号已绑定");
         }
         // 验证邮箱信息
-        if (!SendMailUtil.check(platform, bindEmail)) {
+        if (!SendMailExecute.checkAuth(platform, bindEmail)) {
             throw new BadRequestException("邮箱账号验证失败，请仔细检查账号和密码！");
         }
 
@@ -80,7 +81,7 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
         }
         // 验证邮箱信息
         SysEmailPlatform platform = platformDao.getOneById(bindEmail.getPlatformId());
-        if (!SendMailUtil.check(platform, bindEmail)) {
+        if (!SendMailExecute.checkAuth(platform, bindEmail)) {
             throw new BadRequestException("邮箱账号验证失败，请仔细检查账号和密码！");
         }
 

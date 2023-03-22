@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
@@ -19,16 +18,16 @@ public class EmailApplication {
         SpringApplication.run(EmailApplication.class, args);
         System.out.println(
                 " ███▄    █    ███▄ ▄███▓   ▄████▄     ▄▄▄▄\n" +
-                " ██ ▀█   █   ▓██▒▀█▀ ██▒  ▒██▀ ▀█    ▓█████▄\n" +
-                "▓██  ▀█ ██  ▒▓██    ▓██░  ▒▓█    ▄   ▒██▒ ▄██\n" +
-                "▓██▒  ▐▌██  ▒▒██    ▒██   ▒▓▓▄ ▄██  ▒▒██░█▀\n" +
-                "▒██░   ▓██  ░▒██▒   ░██▒  ▒ ▓███▀   ░░▓█  ▀█▓\n" +
-                "░ ▒░   ▒ ▒   ░ ▒░   ░  ░  ░ ░▒ ▒    ░░▒▓███▀▒\n" +
-                "░ ░░   ░ ▒  ░░  ░      ░    ░  ▒     ▒░▒   ░\n" +
-                "   ░   ░ ░   ░      ░     ░           ░    ░\n" +
-                "         ░          ░     ░ ░         ░\n" +
-                "                      ░                  ░\n" +
-                "                                 Author:  miku & dd\n"
+                        " ██ ▀█   █   ▓██▒▀█▀ ██▒  ▒██▀ ▀█    ▓█████▄\n" +
+                        "▓██  ▀█ ██  ▒▓██    ▓██░  ▒▓█    ▄   ▒██▒ ▄██\n" +
+                        "▓██▒  ▐▌██  ▒▒██    ▒██   ▒▓▓▄ ▄██  ▒▒██░█▀\n" +
+                        "▒██░   ▓██  ░▒██▒   ░██▒  ▒ ▓███▀   ░░▓█  ▀█▓\n" +
+                        "░ ▒░   ▒ ▒   ░ ▒░   ░  ░  ░ ░▒ ▒    ░░▒▓███▀▒\n" +
+                        "░ ░░   ░ ▒  ░░  ░      ░    ░  ▒     ▒░▒   ░\n" +
+                        "   ░   ░ ░   ░      ░     ░           ░    ░\n" +
+                        "         ░          ░     ░ ░         ░\n" +
+                        "                      ░                  ░\n" +
+                        "                                 Author:  miku & dd\n"
         );
     }
 
@@ -48,4 +47,5 @@ public class EmailApplication {
     public String index() {
         return "Backend service started successfully";
     }
+
 }

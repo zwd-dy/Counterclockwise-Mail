@@ -38,9 +38,18 @@ public class Mail extends BaseEntity {
      */
     private String userId;
     /**
-     * 1.已发送    2.收件箱   3.草稿箱
+     * 0.已发送    1.收件箱   2.草稿箱
      */
     private int type;
+    /**
+     * 发送状态
+     *  0.已投递到对方邮箱  1.正在发送  2.发送失败
+     */
+    private int sendState;
+    /**
+     * 异常日志
+     */
+    private String sendExceptionLog;
     /**
      * 收件时间
      */
