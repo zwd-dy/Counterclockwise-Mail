@@ -1,23 +1,21 @@
-package com.shadougao.email.dao.impl;
+package com.shadougao.email.dao.mongo.impl;
 
 import cn.hutool.core.util.ReflectUtil;
-import com.shadougao.email.dao.BaseDao;
-import com.shadougao.email.entity.BaseEntity;
+import com.shadougao.email.dao.mongo.BaseDao;
+import com.shadougao.email.entity.MongoBaseEntity;
 import com.shadougao.email.entity.dto.PageData;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class BaseDaoImpl<T extends BaseEntity> implements BaseDao<T> {
+public class BaseDaoImpl<T extends MongoBaseEntity> implements BaseDao<T> {
 
     private final MongoTemplate mongoTemplate;
 

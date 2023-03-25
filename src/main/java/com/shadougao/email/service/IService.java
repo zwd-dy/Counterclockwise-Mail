@@ -1,12 +1,12 @@
 package com.shadougao.email.service;
 
-import com.shadougao.email.dao.BaseDao;
-import com.shadougao.email.entity.BaseEntity;
+import com.shadougao.email.dao.mongo.BaseDao;
+import com.shadougao.email.entity.MongoBaseEntity;
 import com.shadougao.email.entity.dto.PageData;
 
 import java.util.List;
 
-public interface IService<T extends BaseEntity> {
+public interface IService<T extends MongoBaseEntity> {
 
     T getOneById(String id);
 

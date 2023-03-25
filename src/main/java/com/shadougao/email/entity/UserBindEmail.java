@@ -16,7 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_user_bind_email")
-public class UserBindEmail extends BaseEntity {
+public class UserBindEmail extends MongoBaseEntity {
     /**
      * 平台id [SysEmailPlatform]
      */

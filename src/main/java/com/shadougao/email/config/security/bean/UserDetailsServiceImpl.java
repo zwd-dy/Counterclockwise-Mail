@@ -1,10 +1,9 @@
 package com.shadougao.email.config.security.bean;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shadougao.email.common.result.exception.BadRequestException;
+import com.shadougao.email.dao.mysql.SysUserRepository;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.dto.JwtUserDto;
-import com.shadougao.email.sys.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final SysUserMapper userMapper;
+    private final SysUserRepository sysUserRepository;
 
     /**
      * 用户信息缓存
@@ -32,9 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         JwtUserDto jwtUserDto;
         SysUser user;
         try {
-            QueryWrapper<SysUser> query = new QueryWrapper<>();
-            query.eq("username", username);
-            user = userMapper.selectOne(query);
+            user = sysUserRepository.findByUsername(username);
         } catch (BadRequestException e) {
             // SpringSecurity会自动转换UsernameNotFoundException为BadCredentialsException
             throw new BadRequestException(e.getMessage());

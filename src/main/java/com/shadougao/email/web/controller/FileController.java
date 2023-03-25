@@ -2,13 +2,10 @@ package com.shadougao.email.web.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
-import com.shadougao.email.EmailApplication;
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.entity.MailFile;
 import com.shadougao.email.service.MailFileService;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 
@@ -40,7 +36,7 @@ public class FileController {
     @PostMapping("/upload")
     @ResponseBody
     public Result<?> handleFileUpload(MultipartFile file) {
-        String userId = SecurityUtils.getCurrentUser().getId();
+        Long userId = SecurityUtils.getCurrentUser().getId();
         String filename = file.getOriginalFilename();
         String path =  "/" + userId + "/" + filename;
         File saveFile = new File(uploadPath + path);

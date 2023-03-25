@@ -62,7 +62,6 @@ public class AddressBookController {
     /**
      * 联系人批量删除
      *
-     * @param ids
      * @return
      */
     @DeleteMapping("/batchDelete")

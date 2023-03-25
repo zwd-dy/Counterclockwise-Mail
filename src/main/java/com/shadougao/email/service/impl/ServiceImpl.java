@@ -1,17 +1,14 @@
 package com.shadougao.email.service.impl;
 
-import com.shadougao.email.common.utils.SecurityUtils;
-import com.shadougao.email.dao.BaseDao;
-import com.shadougao.email.entity.BaseEntity;
-import com.shadougao.email.entity.SysUser;
+import com.shadougao.email.dao.mongo.BaseDao;
+import com.shadougao.email.entity.MongoBaseEntity;
 import com.shadougao.email.entity.dto.PageData;
 import com.shadougao.email.service.IService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-public class ServiceImpl<M extends BaseDao<T>,T extends BaseEntity> implements IService<T> {
+public class ServiceImpl<M extends BaseDao<T>,T extends MongoBaseEntity> implements IService<T> {
 
     @Autowired
     protected M baseMapper;

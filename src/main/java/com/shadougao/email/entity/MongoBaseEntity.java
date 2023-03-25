@@ -12,7 +12,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class BaseEntity implements Serializable {
+public class MongoBaseEntity implements Serializable {
     /*
     id
      */

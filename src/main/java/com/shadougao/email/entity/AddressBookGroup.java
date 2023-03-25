@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_address_book_group")
-public class AddressBookGroup extends BaseEntity {
+public class AddressBookGroup extends MongoBaseEntity {
     /**
      * 分组名
      */
@@ -22,5 +22,5 @@ public class AddressBookGroup extends BaseEntity {
     /**
      * 用户id
      */
-    private String userId;
+    private Long userId;
 }

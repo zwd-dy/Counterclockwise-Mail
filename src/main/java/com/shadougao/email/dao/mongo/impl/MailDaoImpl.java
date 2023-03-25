@@ -1,6 +1,6 @@
-package com.shadougao.email.dao.impl;
+package com.shadougao.email.dao.mongo.impl;
 
-import com.shadougao.email.dao.MailDao;
+import com.shadougao.email.dao.mongo.MailDao;
 import com.shadougao.email.entity.Mail;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;

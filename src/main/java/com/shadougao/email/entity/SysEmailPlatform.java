@@ -17,7 +17,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("sys_email_platform")
-public class SysEmailPlatform extends BaseEntity{
+public class SysEmailPlatform extends MongoBaseEntity {
     /**
      * 平台名字（QQ邮箱、126邮箱、gmail邮箱）
      */

@@ -1,12 +1,12 @@
 package com.shadougao.email.config.security.bean;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.shadougao.email.common.utils.EncryptUtils;
 import com.shadougao.email.common.utils.IpUtils;
 import com.shadougao.email.common.utils.RedisUtil;
 import com.shadougao.email.entity.OnlineUserDto;
 import com.shadougao.email.entity.dto.JwtUserDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 

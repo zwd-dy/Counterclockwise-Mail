@@ -1,6 +1,6 @@
-package com.shadougao.email.dao.impl;
+package com.shadougao.email.dao.mongo.impl;
 
-import com.shadougao.email.dao.UserBindEmailDao;
+import com.shadougao.email.dao.mongo.UserBindEmailDao;
 import com.shadougao.email.entity.UserBindEmail;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

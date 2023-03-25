@@ -4,10 +4,9 @@ import cn.hutool.core.lang.Validator;
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.SecurityUtils;
-import com.shadougao.email.dao.AddressBookDao;
-import com.shadougao.email.dao.AddressBookGroupDao;
+import com.shadougao.email.dao.mongo.AddressBookDao;
+import com.shadougao.email.dao.mongo.AddressBookGroupDao;
 import com.shadougao.email.entity.AddressBook;
-import com.shadougao.email.entity.AddressBookGroup;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.service.AddressBookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +37,15 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookDao, AddressB
             throw new BadRequestException("邮箱格式有误，请检查！");
         }
         // 判断是否重复添加
-        if (!Objects.isNull(addressBookDao.getOneByEmailUser(user.getId(), addressBook.getEmailAddress()))) {
-            throw new BadRequestException("该联系人已在通讯录中，请勿重复添加");
-        }
+//        if (!Objects.isNull(addressBookDao.getOneByEmailUser(user.getId(), addressBook.getEmailAddress()))) {
+//            throw new BadRequestException("该联系人已在通讯录中，请勿重复添加");
+//        }
 
         // 完成添加
-        addressBook.setUserId(user.getId());
-        if (Objects.isNull(addressBookDao.addOne(addressBook))) {
-            throw new BadRequestException("系统出错，请重新添加！");
-        }
+//        addressBook.setUserId(user.getId());
+//        if (Objects.isNull(addressBookDao.addOne(addressBook))) {
+//            throw new BadRequestException("系统出错，请重新添加！");
+//        }
         return Result.success(addressBook);
     }
 

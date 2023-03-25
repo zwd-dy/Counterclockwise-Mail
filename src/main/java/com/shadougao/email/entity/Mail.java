@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_mail")
-public class Mail extends BaseEntity {
+public class Mail extends MongoBaseEntity {
 
     /**
      * 邮件主题

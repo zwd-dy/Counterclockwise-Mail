@@ -1,14 +1,14 @@
-package com.shadougao.email.dao;
+package com.shadougao.email.dao.mongo;
 
 
-import com.shadougao.email.entity.BaseEntity;
+import com.shadougao.email.entity.MongoBaseEntity;
 import com.shadougao.email.entity.dto.PageData;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
-public interface BaseDao<T extends BaseEntity> {
+public interface BaseDao<T extends MongoBaseEntity> {
 
     T getOneById(String id);
 

@@ -3,11 +3,11 @@ package com.shadougao.email.service.impl;
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.SecurityUtils;
-import com.shadougao.email.dao.AddressBookGroupDao;
+import com.shadougao.email.dao.mongo.AddressBookGroupDao;
 import com.shadougao.email.entity.AddressBookGroup;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.service.AddressBookGroupService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class AddressBookGroupServiceImpl extends ServiceImpl<AddressBookGroupDao, AddressBookGroup> implements AddressBookGroupService {
 
-    @Autowired
-    private AddressBookGroupDao groupDao;
+    private final AddressBookGroupDao groupDao;
 
     @Override
     public Result addGroup(AddressBookGroup group) {

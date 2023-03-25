@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_file")
-public class MailFile extends BaseEntity {
+public class MailFile extends MongoBaseEntity {
     /**
      * 文件名
      */
@@ -28,7 +28,7 @@ public class MailFile extends BaseEntity {
     /**
      * 上传者
      */
-    private String uploader;
+    private Long uploader;
     /**
      * 绝对路径
      */

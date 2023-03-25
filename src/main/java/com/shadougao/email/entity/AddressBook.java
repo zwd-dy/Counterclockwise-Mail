@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("t_address_book")
-public class AddressBook extends BaseEntity {
+public class AddressBook extends MongoBaseEntity {
     /**
      * 邮箱账号
      */
