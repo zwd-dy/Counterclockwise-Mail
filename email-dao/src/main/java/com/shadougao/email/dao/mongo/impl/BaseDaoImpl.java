@@ -166,4 +166,11 @@ public class BaseDaoImpl<T extends MongoBaseEntity> implements BaseDao<T> {
         return this.mongoTemplate;
     }
 
+    public String getCollectionName() {
+        return collectionName;
+    }
+
+    public void setCollectionName(String collectionName) {
+        this.collectionName = collectionName;
+    }
 }

@@ -63,4 +63,5 @@ public class ServiceImpl<M extends BaseDao<T>,T extends MongoBaseEntity> impleme
         return baseMapper.pageList(pageData,entity);
     }
 
+
 }

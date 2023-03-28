@@ -26,7 +26,8 @@ public class RedisChannelListenerExecute implements MessageListener {
     public void onMessage(Message message, byte[] bytes) {
         RedisResult result = JSONObject.parseObject(message.getBody(), RedisResult.class);
         Method method = redisListenerMap.get(result.getCode());
-        method.invoke(GetBeanUtil.getApplicationContext().getBean(method.getDeclaringClass()), result);
+//        method.invoke(GetBeanUtil.getApplicationContext().getBean(method.getDeclaringClass()), result);
+        method.invoke(method.getDeclaringClass().newInstance(), result);
     }
 
 }

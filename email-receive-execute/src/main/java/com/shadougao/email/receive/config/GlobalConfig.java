@@ -1,30 +1,22 @@
 package com.shadougao.email.receive.config;
 
+import com.shadougao.email.receive.execute.MailListener;
 import com.shadougao.email.receive.execute.MailTask;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.*;
 
 @Configuration
 public class GlobalConfig {
 
-    @Bean
-    public MailTask mailTask() {
-        MailTask mailTask = new MailTask();
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                0,
-                Integer.MAX_VALUE,
-                60L,
-                TimeUnit.SECONDS,
-                new SynchronousQueue<>()
-        );
-        mailTask.setPoolExecutor(threadPoolExecutor);
-        mailTask.setThreads(new ArrayList<>());
-        return mailTask;
-    }
-
+    public String nodeName;
+    @Value("${email.listener.user-online-cycle}")
+    public Integer userOnlineCycle;
+    @Value("${email.listener.normal-cycle}")
+    public Integer normalCycle;
 }

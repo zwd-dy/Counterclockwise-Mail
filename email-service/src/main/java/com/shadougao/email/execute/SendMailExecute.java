@@ -1,4 +1,4 @@
-package com.shadougao.email.service.impl;
+package com.shadougao.email.execute;
 
 import com.shadougao.email.common.result.MailEnum;
 import com.shadougao.email.common.utils.GetBeanUtil;

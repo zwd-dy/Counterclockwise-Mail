@@ -24,7 +24,7 @@ public class UserBindEmail extends MongoBaseEntity {
     /**
      * 用户id
      */
-    private String userId;
+    private Long userId;
     /**
      * 登录邮箱账号
      */
@@ -33,6 +33,10 @@ public class UserBindEmail extends MongoBaseEntity {
      * 登录邮箱密码
      */
     private String emailAuth;
+    /**
+     * 0/未在同步 1/正在同步
+     */
+    private Integer synchronizing;
 
     @Override
     public String toString() {

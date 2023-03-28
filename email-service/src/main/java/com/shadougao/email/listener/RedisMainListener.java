@@ -2,22 +2,26 @@ package com.shadougao.email.listener;
 
 import com.shadougao.email.annotation.RedisChannelListener;
 import com.shadougao.email.annotation.RedisResultCode;
+import com.shadougao.email.common.utils.GetBeanUtil;
 import com.shadougao.email.common.utils.RedisUtil;
 import com.shadougao.email.config.RedisConfig;
-import com.shadougao.email.entity.RedisResult;
-import com.shadougao.email.entity.RedisResultEnum;
-import com.shadougao.email.entity.UserBindEmail;
+import com.shadougao.email.entity.*;
+import com.shadougao.email.execute.MailExecutor;
+import com.shadougao.email.execute.MailParseExecute;
+import com.shadougao.email.service.SysEmailPlatformService;
 import com.shadougao.email.service.UserBindEmailService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 主程序监听
  */
 @RedisChannelListener
-@Component
+@Slf4j
 public class RedisMainListener {
 
     // 节点名字前缀
@@ -32,12 +36,19 @@ public class RedisMainListener {
         收：executeChannel
  */
 
-    @Autowired
     private RedisUtil redisUtil;
-    @Autowired
     private RedisConfig redisConfig;
-    @Autowired
     private UserBindEmailService bindEmailService;
+    private SysEmailPlatformService platformService;
+    private MailExecutor mailExecutor;
+
+    public RedisMainListener() {
+        redisUtil = GetBeanUtil.getApplicationContext().getBean(RedisUtil.class);
+        redisConfig = GetBeanUtil.getApplicationContext().getBean(RedisConfig.class);
+        bindEmailService = GetBeanUtil.getApplicationContext().getBean(UserBindEmailService.class);
+        platformService = GetBeanUtil.getApplicationContext().getBean(SysEmailPlatformService.class);
+        mailExecutor = GetBeanUtil.getApplicationContext().getBean(MailExecutor.class);
+    }
 
     public void send(RedisResult result) {
         redisUtil.publist(redisConfig.mainChannel, result);
@@ -57,19 +68,49 @@ public class RedisMainListener {
         // 计算并分配任务
         assignTask();
         this.send(new RedisResult(RedisResultEnum.CONNECT_SUCCESS, name));
+
     }
 
+    /**
+     * 有新邮件
+     *
+     * @param result
+     */
+    @RedisResultCode(RedisResultEnum.NEW_MAIL_UIDS)
+    public void newMail(RedisResult result) {
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        UserBindEmail bindEmail = (UserBindEmail) map.get("bindEmail");
+        List<String> newUids = (List<String>) map.get("newUids");
+        SysEmailPlatform platform = platformService.getOneById(bindEmail.getPlatformId());
 
+        for (String uid : newUids) {
+            // 初始化Mail对象
+//            Mail mail = new Mail();
+//            mail.setUserId(bindEmail.getUserId());
+//            mail.setUid(uid);
+//            mail.setBindId(bindEmail.getId());
+            // 初始化线程
+            MailParseExecute execute = new MailParseExecute();
+            execute.setBindEmail(bindEmail);
+            execute.setPlatform(platform);
+            execute.setUid(Long.parseLong(uid));
+            // 执行
+            mailExecutor.executeParse(execute);
+        }
 
+    }
 
     /**
      * 重新计算分配任务
      */
-    public void assignTask(){
+    public boolean assignTask() {
         long nodeNum = redisUtil.sGetSetSize(KEY_NODE_LIST);
         // 获取所有需要监控的邮箱账号
         List<UserBindEmail> bindEmails = bindEmailService.getAll();
         // 计算每个节点最多任务量：总任务量 / 节点数 (四舍五入)
+        if (bindEmails.size() < nodeNum) {
+            return false;
+        }
         Long nodeTaskNum = Math.round((double) bindEmails.size() / nodeNum);
         // 获取节点列表
         Set<Object> nodes = redisUtil.sGet(KEY_NODE_LIST);
@@ -79,8 +120,8 @@ public class RedisMainListener {
         String nodeName = null;
 
         for (int i = 1; i <= bindEmails.size(); i++) {
-            taskList.add(bindEmails.get(i-1));
-            if(i % nodeTaskNum == 0 && iterator.hasNext()){
+            taskList.add(bindEmails.get(i - 1));
+            if (i % nodeTaskNum == 0 && iterator.hasNext()) {
                 nodeName = (String) iterator.next();
                 // 往redis缓存存储任务分配
                 redisUtil.hset(KEY_NODE_TASK, nodeName, taskList);
@@ -88,11 +129,71 @@ public class RedisMainListener {
                 taskList.clear();
             }
         }
-        if(iterator.hasNext()){
+        if (iterator.hasNext()) {
             // 剩余的（不够分配量）分配给最后一个节点
             redisUtil.hset(KEY_NODE_TASK, (String) iterator.next(), taskList);
             taskList.clear();
         }
+        return true;
+    }
+
+    /**
+     * 发送添加任务
+     * @param bindEmail
+     */
+    public void addTask(UserBindEmail bindEmail) {
+        long nodeNum = redisUtil.sGetSetSize(KEY_NODE_LIST);
+        // 获取所有需要监控的邮箱账号
+        List<UserBindEmail> bindEmails = bindEmailService.getAll();
+        // 计算每个节点最多任务量：总任务量 / 节点数 (四舍五入)
+        if (bindEmails.size() < nodeNum || nodeNum == 0) {
+            return;
+        }
+        Long nodeTaskNum = Math.round((double) bindEmails.size() / nodeNum);
+        // 获取节点列表
+        Set<Object> nodes = redisUtil.hkeys(KEY_NODE_TASK);
+        for (Object node : nodes) {
+            String nodeName = null;
+            if (node != null) {
+                nodeName = (String) node;
+                List<UserBindEmail> bindUserList = (List<UserBindEmail>) redisUtil.hget(KEY_NODE_TASK, nodeName);
+                if (bindUserList != null && bindUserList.size() < nodeTaskNum) {
+                    bindUserList.add(bindEmail);
+                    redisUtil.hset(KEY_NODE_TASK, nodeName, bindUserList);
+                    send(new RedisResult(RedisResultEnum.TASK_NEW_ADD, bindEmail, nodeName));
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * 发送删除任务
+     * @param bindId
+     */
+    public void delTask(String bindId) {
+        // 获取节点列表
+        Set<Object> nodes = redisUtil.hkeys(KEY_NODE_TASK);
+        for (Object node : nodes) {
+            String nodeName = null;
+            if (node != null) {
+                nodeName = (String) node;
+                List<UserBindEmail> bindUserList = (List<UserBindEmail>) redisUtil.hget(KEY_NODE_TASK, nodeName);
+                if (bindUserList != null) {
+                    List<UserBindEmail> newList = bindUserList.stream().filter(item -> item.getId().equals(bindId)).collect(Collectors.toList());
+                    redisUtil.hset(KEY_NODE_TASK, nodeName, newList);
+                    send(new RedisResult(RedisResultEnum.TASK_DEL, bindId, nodeName));
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * 发送任务更新
+     */
+    public void taskUpdate(String bindId) {
+        send(new RedisResult(RedisResultEnum.TASK_UPDATE, bindId));
     }
 
 

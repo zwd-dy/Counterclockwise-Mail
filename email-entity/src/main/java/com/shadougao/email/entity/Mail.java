@@ -14,6 +14,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Mail extends MongoBaseEntity {
 
     /**
+     * 邮箱UID
+     */
+    private String uid;
+    /**
      * 邮件主题
      */
     private String subject;
@@ -26,6 +30,10 @@ public class Mail extends MongoBaseEntity {
      */
     private String from;
     /**
+     * 发件人姓名
+     */
+    private String formName;
+    /**
      * 收件人地址
      */
     private String[] recipients;
@@ -36,7 +44,7 @@ public class Mail extends MongoBaseEntity {
     /**
      * 用户id
      */
-    private String userId;
+    private Long userId;
     /**
      * 0.已发送    1.收件箱   2.草稿箱
      */
@@ -51,12 +59,20 @@ public class Mail extends MongoBaseEntity {
      */
     private String sendExceptionLog;
     /**
+     * 收件异常日志
+     */
+    private String receiveExceptionLog;
+    /**
      * 收件时间
      */
-    private String receiveTime;
+    private Long receiveTime;
     /**
      * 发件时间
      */
-    private String sendTime;
+    private Long sendTime;
+    /**
+     * 收件的绑定邮箱
+     */
+    private String bindId;
 
 }
