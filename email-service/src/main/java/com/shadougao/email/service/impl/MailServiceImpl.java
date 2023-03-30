@@ -78,7 +78,14 @@ public class MailServiceImpl extends ServiceImpl<MailDao, Mail> implements MailS
             List<Long> uids = new ArrayList<>();
             List<Mail> mail = map.get(bindId);
             SysEmailPlatform platform = platformDao.getOneById(bindEmail.getPlatformId());
-            mail.forEach(item -> uids.add(Long.parseLong(item.getUid())));
+            for (int i = 0; i < mail.size(); i++) {
+                String uid = mail.get(i).getUid();
+                if (uid == null) {
+                    continue;
+                }
+                uids.add(Long.parseLong(uid));
+            }
+//            mail.forEach(item -> uids.add(Long.parseLong(item.getUid())));
             EmailUtil.delMail(platform, bindEmail, uids);
         }
         // 从数据库中删除

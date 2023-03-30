@@ -5,7 +5,8 @@ import com.shadougao.email.entity.MailTag;
 
 public interface MailTagService extends IService<MailTag> {
 
-    Result<?> addTag(MailTag mailTag,String parentId);
-    Result<?> delTag(MailTag mailTag);
+    Result<?> addTag(MailTag mailTag);
+    Result<?> delTag(String tagId);
+    Result<?> getTag();
 
 }

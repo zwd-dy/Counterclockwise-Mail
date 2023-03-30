@@ -16,6 +16,7 @@ import java.util.List;
 public class MailTag extends MongoBaseEntity{
     private String label;
     private Long userId;
+    private String parentId;
     private List<MailTag> children;
 
     @Override

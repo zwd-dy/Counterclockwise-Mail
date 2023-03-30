@@ -48,12 +48,12 @@ public class Mail extends MongoBaseEntity {
     /**
      * 0.已发送    1.收件箱   2.草稿箱
      */
-    private int type;
+    private Integer type;
     /**
      * 发送状态
      *  0.已投递到对方邮箱  1.正在发送  2.发送失败
      */
-    private int sendState;
+    private Integer sendState;
     /**
      * 异常日志
      */

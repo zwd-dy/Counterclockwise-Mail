@@ -33,7 +33,11 @@ public class MailDaoImpl extends BaseDaoImpl<Mail> implements MailDao {
         Integer pageSize = pageData.getPageSize();
 
         Query query = new Query();
-        query.with(Sort.by(Sort.Direction.DESC, "receiveTime"));
+        String sortTimeField = "receiveTime";
+        if(entity.getType() == 0){
+            sortTimeField = "sendTime";
+        }
+        query.with(Sort.by(Sort.Direction.DESC, sortTimeField));
 
 
         // 条件查询
@@ -73,9 +77,12 @@ public class MailDaoImpl extends BaseDaoImpl<Mail> implements MailDao {
             // 取出最后一条
             Mail data = mails.get(mails.size() - 1);
             // 取到上一页的最后一条收件时间
-            Long receiveTime = data.getReceiveTime();
+            Long sortTime = data.getReceiveTime();
+            if(entity.getType()==0){
+                sortTime = data.getSendTime();
+            }
             // 从上一条最后一条开始查
-            query.addCriteria(Criteria.where("receiveTime").lt(receiveTime));
+            query.addCriteria(Criteria.where(sortTimeField).lt(sortTime));
         }
 
         query.limit(pageSize);

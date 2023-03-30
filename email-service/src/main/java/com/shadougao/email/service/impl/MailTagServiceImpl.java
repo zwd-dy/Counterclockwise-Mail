@@ -1,6 +1,7 @@
 package com.shadougao.email.service.impl;
 
 import com.shadougao.email.common.result.Result;
+import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.dao.mongo.MailTagDao;
 import com.shadougao.email.entity.MailTag;
@@ -20,62 +21,61 @@ public class MailTagServiceImpl extends ServiceImpl<MailTagDao, MailTag> impleme
     private final MailTagDao tagDao;
 
     @Override
-    public Result<?> addTag(MailTag mailTag, String parentId) {
+    public Result<?> addTag(MailTag mailTag) {
         Long userId = SecurityUtils.getCurrentUser().getId();
-        MailTag tag = tagDao.findOne(new Query().addCriteria(Criteria.where("userId").is(userId)));
-        addTagByParentId(tag, parentId, mailTag);
-        tagDao.updateOne(tag);
+        // 判断标签是否存在
+        if (tagDao.findOne(new Query().addCriteria(Criteria.where("label").is(mailTag.getLabel()).and("userId").is(userId))) != null) {
+            throw new BadRequestException("标签名已存在");
+        }
+        // 添加标签
+        mailTag.setUserId(userId);
+        return Result.success(tagDao.addOne(mailTag));
+    }
+
+    @Override
+    public Result<?> delTag(String tagId) {
+        Long userId = SecurityUtils.getCurrentUser().getId();
+        // 判断标签是否存在
+        if (tagDao.getOneById(tagId) == null) {
+            throw new BadRequestException("标签名不存在");
+        }
+        // 删除标签
+        tagDao.delOne(tagId);
         return Result.success();
     }
 
     @Override
-    public Result<?> delTag(MailTag mailTag) {
+    public Result<?> getTag() {
+        List<MailTag> tagData = new ArrayList<>();
         Long userId = SecurityUtils.getCurrentUser().getId();
-        String delId = mailTag.getId();
-        MailTag tag = tagDao.findOne(new Query().addCriteria(Criteria.where("userId").is(userId)));
-        if(tag.getId().equals(delId)){
-            tagDao.delOne(delId);
-        }else {
-            delTagByParentId(tag,delId);
-            tagDao.updateOne(tag);
+        // 取出所有父级
+        List<MailTag> parentTags = tagDao.find(new Query().addCriteria(Criteria.where("userId").is(userId).and("parentId").is("0")));
+
+        for (int i = 0; i < parentTags.size(); i++) {
+            tagData.add(findChild(parentTags.get(i).getId()));
         }
-        return Result.success() ;
+
+        return Result.success(tagData);
     }
 
-    public void addTagByParentId(MailTag tag, String parentId, MailTag newTag) {
-        if ("0".equals(parentId) || tag == null) {
-            tag = newTag;
-            return;
+
+    /**
+     * 递归算法-算出子节点
+     */
+    public MailTag findChild(String orgId) {
+        List<MailTag> childList = new ArrayList<>();
+        // 通过id获取所有VO信息
+        MailTag organizationVO = tagDao.getOneById(orgId);
+
+        //查找children子节点，递归程序必须要有一个出口
+        List<MailTag> organizationList = this.tagDao.find(new Query().addCriteria(Criteria.where("parentId").is(orgId)));
+        //organizationVO.setChild(organizationList);
+        for (MailTag item : organizationList) {
+            childList.add(findChild(item.getId()));
         }
-        List<MailTag> tags = tag.getChildren();
-        if (tags != null) {
-            for (int i = 0; i < tags.size(); i++) {
-                MailTag parent = tags.get(i);
-                if (parentId.equals(parent.getId())) {
-                    List<MailTag> children = parent.getChildren();
-                    if (children == null) children = new ArrayList<>();
-                    children.add(newTag);
-                    parent.setChildren(children);
-                    return;
-                } else {
-                    addTagByParentId(parent, parentId, newTag);
-                }
-            }
-        }
+        organizationVO.setChildren(childList);
+        return organizationVO;
     }
 
-    public void delTagByParentId(MailTag tag, String id) {
-        List<MailTag> tags = tag.getChildren();
-        if (tags != null) {
-            for (int i = 0; i < tags.size(); i++) {
-                MailTag tag1 = tags.get(i);
-                if (id.equals(tag1.getId())) {
-                    tags.remove(tag1);
-                    return;
-                } else {
-                    delTagByParentId(tag1, id);
-                }
-            }
-        }
-    }
+
 }
