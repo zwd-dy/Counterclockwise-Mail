@@ -30,16 +30,14 @@ public class SendMailExecute implements Runnable {
     private final MailService mailService;
     private final UserBindEmail bindEmail;
     private final SysEmailPlatform platform;
-    private boolean isSystemSend;
     private final Mail mail;
 
-    public SendMailExecute(UserBindEmail bindEmail, SysEmailPlatform platform, Mail mail, boolean isSystemSend) {
+    public SendMailExecute(UserBindEmail bindEmail, SysEmailPlatform platform, Mail mail) {
         this.bindEmail = bindEmail;
         this.platform = platform;
         this.mail = mail;
         this.fileService = GetBeanUtil.getApplicationContext().getBean(MailFileService.class);
         this.mailService = GetBeanUtil.getApplicationContext().getBean(MailService.class);
-        this.isSystemSend = isSystemSend;
     }
 
 
@@ -85,10 +83,8 @@ public class SendMailExecute implements Runnable {
                 }
             }
             /* 系统发送邮件不需要记录 */
-            if (!isSystemSend) {
-                // 更新状态
-                mailService.updateOne(mail);
-            }
+            // 更新状态
+            mailService.updateOne(mail);
         }
     }
 

@@ -8,8 +8,8 @@ public interface MailService extends IService<Mail> {
 
     /**
      * 用户发送邮件
-     * @param mail
-     * @return
+     * @param mail 邮件
+     * @return /
      */
     void sendMail(Mail mail);
 

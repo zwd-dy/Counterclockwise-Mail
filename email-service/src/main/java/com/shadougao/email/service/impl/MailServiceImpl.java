@@ -10,13 +10,11 @@ import com.shadougao.email.entity.Mail;
 import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
-import com.shadougao.email.entity.dto.PageData;
 import com.shadougao.email.execute.SendMailExecute;
-import com.shadougao.email.execute.MailExecutor;
+import com.shadougao.email.execute.SendMailExecutor;
 import com.shadougao.email.service.MailService;
-import lombok.RequiredArgsConstructor;
 import com.shadougao.email.utils.EmailUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -52,8 +50,7 @@ public class MailServiceImpl extends ServiceImpl<MailDao, Mail> implements MailS
         mail.setSendExceptionLog("null");
         mail = this.addOne(mail);
         SendMailExecute execute = new SendMailExecute(bindEmail, platform, mail);
-        executor.executeSend(execute);
-        return Result.success();
+        executor.execute(execute);
     }
 
     @Override
@@ -88,9 +85,6 @@ public class MailServiceImpl extends ServiceImpl<MailDao, Mail> implements MailS
         }
         // 从数据库中删除
         this.batchDel(ids);
-
-        SendMailExecute execute = new SendMailExecute(bindEmail, platform, mail, false);
-        executor.execute(execute);
     }
 
 }
