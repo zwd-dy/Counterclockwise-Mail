@@ -1,0 +1,10 @@
+# 邮件服务器的SMTP地址
+host = smtp.qq.com
+# 邮件服务器的SMTP端口，可选，默认25
+port = 443
+# 发件人（必须正确，否则发送失败）
+from = 2982516242@qq.com
+# 用户名，默认为发件人邮箱前缀
+user = 牛魔酬宾科技
+# 密码
+pass = mgotpunbzzeoddgg
