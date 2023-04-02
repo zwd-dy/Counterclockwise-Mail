@@ -22,12 +22,12 @@ public class SysEmailPlatform extends MongoBaseEntity {
      * 平台名字（QQ邮箱、126邮箱、gmail邮箱）
      */
     private String name;
-    private Map<String,Connect> connect;
+    private Map<String, Connect> connect;
 
 
     @Setter
     @Getter
-    public class Connect {
+    public static class Connect {
         /**
          * 邮箱服务器地址
          */
@@ -39,11 +39,11 @@ public class SysEmailPlatform extends MongoBaseEntity {
         /**
          * 附加连接参数
          */
-        List<Map<String,String>> props;
+        List<Map<String, String>> props;
         /**
          * 客户端参数
          */
-        List<Map<String,String>> clientParams;
+        List<Map<String, String>> clientParams;
     }
 
 

@@ -55,6 +55,7 @@ public class SysUser extends MySqlBaseEntity {
      * 邮箱
      */
     @Email
+    @Column(unique = true)
     private String email;
 
     /**

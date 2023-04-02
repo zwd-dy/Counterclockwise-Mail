@@ -18,6 +18,7 @@ public class EmailController {
 
     @PostMapping("/send")
     public Result<?> sendMail(@RequestBody Mail mail) {
-        return mailService.sendMail(mail);
+        mailService.sendMail(mail);
+        return Result.success();
     }
 }

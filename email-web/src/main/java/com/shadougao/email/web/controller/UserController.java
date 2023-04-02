@@ -5,10 +5,7 @@ import com.shadougao.email.entity.AddUserDto;
 import com.shadougao.email.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -20,6 +17,12 @@ public class UserController {
     @PostMapping("/register")
     public Result<?> registerUser(@RequestBody @Validated AddUserDto resource) {
         userService.addUser(resource);
+        return Result.success();
+    }
+
+    @GetMapping("/getValidCode")
+    public Result<?> getValidCode(@RequestParam String username, @RequestParam String email) {
+        userService.getValidCode(username, email);
         return Result.success();
     }
 

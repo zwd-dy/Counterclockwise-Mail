@@ -5,9 +5,6 @@ import java.util.concurrent.ExecutorService;
 public class SendMailExecutor {
     private ExecutorService executorService;
 
-
-
-
     public ExecutorService getExecutorService() {
         return executorService;
     }
@@ -16,7 +13,7 @@ public class SendMailExecutor {
         this.executorService = executorService;
     }
 
-    public void execute(Runnable task){
+    public void execute(Runnable task) {
         this.executorService.execute(task);
     }
 }

@@ -26,19 +26,20 @@ import java.util.*;
 
 public class SendMailExecute implements Runnable {
 
-    private MailFileService fileService;
-    private MailService mailService;
-    private UserBindEmail bindEmail;
-    private SysEmailPlatform platform;
-    private Mail mail;
+    private final MailFileService fileService;
+    private final MailService mailService;
+    private final UserBindEmail bindEmail;
+    private final SysEmailPlatform platform;
+    private boolean isSystemSend;
+    private final Mail mail;
 
-    public SendMailExecute(UserBindEmail bindEmail, SysEmailPlatform platform, Mail mail) {
+    public SendMailExecute(UserBindEmail bindEmail, SysEmailPlatform platform, Mail mail, boolean isSystemSend) {
         this.bindEmail = bindEmail;
         this.platform = platform;
         this.mail = mail;
-
         this.fileService = GetBeanUtil.getApplicationContext().getBean(MailFileService.class);
         this.mailService = GetBeanUtil.getApplicationContext().getBean(MailService.class);
+        this.isSystemSend = isSystemSend;
     }
 
 
@@ -76,13 +77,15 @@ public class SendMailExecute implements Runnable {
             if (transport != null) {
                 try {
                     transport.close();
-                } catch (MessagingException e) {
-                    throw new RuntimeException(e);
+                } catch (MessagingException ignore) {
+                    /* 可能会导致抛出 finally 中的异常，try 中的异常不能抛出 */
                 }
-
             }
-            // 更新状态
-            mailService.updateOne(mail);
+            /* 系统发送邮件不需要记录 */
+            if (!isSystemSend) {
+                // 更新状态
+                mailService.updateOne(mail);
+            }
         }
     }
 
@@ -265,13 +268,11 @@ public class SendMailExecute implements Runnable {
             props.put(smtpProp.get("name"), smtpProp.get("value"));
         }
         // 获取Session实例:
-        Session session = Session.getInstance(props, new Authenticator() {
+        return Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
             }
         });
-
-        return session;
     }
 
     /**

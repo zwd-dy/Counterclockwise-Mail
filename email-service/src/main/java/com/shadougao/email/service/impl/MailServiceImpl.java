@@ -1,7 +1,6 @@
 package com.shadougao.email.service.impl;
 
 import com.shadougao.email.common.result.MailEnum;
-import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.dao.mongo.MailDao;
@@ -13,23 +12,21 @@ import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
 import com.shadougao.email.execute.SendMailExecutor;
 import com.shadougao.email.service.MailService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class MailServiceImpl extends ServiceImpl<MailDao, Mail> implements MailService {
 
-    @Autowired
-    private UserBindEmailDao bindDao;
-    @Autowired
-    private SysEmailPlatformDao platformDao;
-    @Autowired
-    private SendMailExecutor executor;
+    private final UserBindEmailDao bindDao;
+    private final SysEmailPlatformDao platformDao;
+    private final SendMailExecutor executor;
 
     @Override
-    public Result<?> sendMail(Mail mail) {
+    public void sendMail(Mail mail) {
         // 获取当前用户
         SysUser user = SecurityUtils.getCurrentUser();
         // 获取发件邮箱
@@ -49,9 +46,7 @@ public class MailServiceImpl extends ServiceImpl<MailDao, Mail> implements MailS
         mail.setType(MailEnum.TYPE_SENT);
         mail.setSendExceptionLog("null");
         mail = this.addOne(mail);
-        SendMailExecute execute = new SendMailExecute(bindEmail, platform, mail);
+        SendMailExecute execute = new SendMailExecute(bindEmail, platform, mail, false);
         executor.execute(execute);
-
-        return null;
     }
 }

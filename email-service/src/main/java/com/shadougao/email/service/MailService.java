@@ -1,6 +1,5 @@
 package com.shadougao.email.service;
 
-import com.shadougao.email.common.result.Result;
 import com.shadougao.email.entity.Mail;
 
 public interface MailService extends IService<Mail> {
@@ -10,5 +9,5 @@ public interface MailService extends IService<Mail> {
      * @param mail
      * @return
      */
-    Result<?> sendMail(Mail mail);
+    void sendMail(Mail mail);
 }

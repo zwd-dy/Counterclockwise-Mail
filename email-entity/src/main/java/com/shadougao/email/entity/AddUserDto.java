@@ -17,4 +17,7 @@ public class AddUserDto {
     @NotBlank(message = "请确认密码!")
     private String confirmPassword;
 
+    @NotBlank
+    private String code;
+
 }

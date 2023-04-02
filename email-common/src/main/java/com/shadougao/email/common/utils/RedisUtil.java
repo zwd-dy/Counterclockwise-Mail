@@ -150,6 +150,30 @@ public final class RedisUtil {
         }
     }
 
+    /**
+     *
+     * 普通缓存放入并设置过期时间
+     * @param key 键
+     * @param value 值
+     * @param time 时间
+     * @param unit 时间单位
+     * @return 成功 / 失败
+     */
+
+    public boolean set(String key, Object value, long time, TimeUnit unit) {
+        try {
+            if (time > 0) {
+                redisTemplate.opsForValue().set(key, value, time, unit);
+            } else {
+                set(key, value);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     /**
      * 普通缓存放入并设置时间
