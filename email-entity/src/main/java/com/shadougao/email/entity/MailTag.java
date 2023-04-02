@@ -17,6 +17,7 @@ public class MailTag extends MongoBaseEntity{
     private String label;
     private Long userId;
     private String parentId;
+    private String color;
     private List<MailTag> children;
 
     @Override

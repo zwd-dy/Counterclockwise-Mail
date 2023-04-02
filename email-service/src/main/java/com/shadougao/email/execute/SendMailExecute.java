@@ -65,7 +65,7 @@ public class SendMailExecute implements Runnable {
             sendMessage(message, mixed, transport);
 
             // 更新状态
-            mail.setType(MailEnum.SEND_SUCCESS);
+            mail.setType(MailEnum.TYPE_SENT);
             mail.setBindId(bindEmail.getId());
             mail.setSendTime(System.currentTimeMillis());
             mail.setSendState(MailEnum.SEND_SUCCESS);

@@ -21,6 +21,7 @@
         <module>email-receive-execute</module>
         <module>email-service</module>
         <module>email-web</module>
+        <module>email-quartz-scheduler</module>
     </modules>
 
 

@@ -1,6 +1,8 @@
 package com.shadougao.email.dao.mongo.impl;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.mongodb.client.result.UpdateResult;
+import com.shadougao.email.annotation.MongoLikeQuery;
 import com.shadougao.email.dao.mongo.BaseDao;
 import com.shadougao.email.entity.MongoBaseEntity;
 import com.shadougao.email.entity.dto.PageData;
@@ -78,6 +80,12 @@ public class BaseDaoImpl<T extends MongoBaseEntity> implements BaseDao<T> {
     }
 
     @Override
+    public long updateMulti(Query query, Update update) {
+        UpdateResult updateResult = mongoTemplate.updateMulti(query, update, collectionName);
+        return updateResult.getModifiedCount();
+    }
+
+    @Override
     public long updateOne(T t) {
         Query query = new Query();
         Update update = new Update();
@@ -130,7 +138,12 @@ public class BaseDaoImpl<T extends MongoBaseEntity> implements BaseDao<T> {
                 Object fieldValue = ReflectUtil.getFieldValue(entity, field);
                 if (fieldValue != null && fieldValue != "") {
                     // 存在值即条件查询
-                    criteria = criteria.and(field.getName()).is(fieldValue);
+                    if (field.isAnnotationPresent(MongoLikeQuery.class)) {
+                        // 是否模糊查询
+                        criteria = criteria.and(field.getName()).regex((String) fieldValue);
+                    } else {
+                        criteria = criteria.and(field.getName()).is(fieldValue);
+                    }
                 }
             }
             query.addCriteria(criteria);

@@ -15,7 +15,6 @@
         <dependency>
             <groupId>com.shadougao.email</groupId>
             <artifactId>email-entity</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>

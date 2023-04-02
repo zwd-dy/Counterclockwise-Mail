@@ -1,6 +1,7 @@
 package com.shadougao.email.dao.mongo.impl;
 
 import cn.hutool.core.util.ReflectUtil;
+import com.shadougao.email.annotation.MongoLikeQuery;
 import com.shadougao.email.dao.mongo.MailDao;
 import com.shadougao.email.entity.Mail;
 import com.shadougao.email.entity.dto.PageData;
@@ -34,8 +35,10 @@ public class MailDaoImpl extends BaseDaoImpl<Mail> implements MailDao {
 
         Query query = new Query();
         String sortTimeField = "receiveTime";
-        if(entity.getType() == 0){
+        if (entity.getType() == 0) {
             sortTimeField = "sendTime";
+        } else if (entity.getType() == 2 || entity.getType() == 3) { // 草稿箱 or 定时发送
+            sortTimeField = "_id";
         }
         query.with(Sort.by(Sort.Direction.DESC, sortTimeField));
 
@@ -54,7 +57,16 @@ public class MailDaoImpl extends BaseDaoImpl<Mail> implements MailDao {
                 Object fieldValue = ReflectUtil.getFieldValue(entity, field);
                 if (fieldValue != null && fieldValue != "") {
                     // 存在值即条件查询
-                    criteria = criteria.and(field.getName()).is(fieldValue);
+                    if(field.getType().isArray()){
+                        criteria = criteria.and(field.getName()).in((String[])fieldValue);
+
+                    } else if(field.isAnnotationPresent(MongoLikeQuery.class)){
+                        // 是否模糊查询
+                        criteria = criteria.and(field.getName()).regex((String) fieldValue);
+                    }
+                    else {
+                        criteria = criteria.and(field.getName()).is(fieldValue);
+                    }
                 }
             }
             query.addCriteria(criteria);
@@ -78,11 +90,14 @@ public class MailDaoImpl extends BaseDaoImpl<Mail> implements MailDao {
             Mail data = mails.get(mails.size() - 1);
             // 取到上一页的最后一条收件时间
             Long sortTime = data.getReceiveTime();
-            if(entity.getType()==0){
+            String id = null;
+            if (entity.getType() == 0) {
                 sortTime = data.getSendTime();
+            } else if (entity.getType() == 2 || entity.getType() == 3) {
+                id = data.getId();
             }
             // 从上一条最后一条开始查
-            query.addCriteria(Criteria.where(sortTimeField).lt(sortTime));
+            query.addCriteria(Criteria.where(sortTimeField).lt(id != null ? id : sortTime));
         }
 
         query.limit(pageSize);
@@ -91,4 +106,6 @@ public class MailDaoImpl extends BaseDaoImpl<Mail> implements MailDao {
 
         return pageData;
     }
+
+
 }

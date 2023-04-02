@@ -1,5 +1,6 @@
 package com.shadougao.email.entity;
 
+import com.shadougao.email.annotation.MongoLikeQuery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class AddressBook extends MongoBaseEntity {
     /**
      * 通讯录名字
      */
+    @MongoLikeQuery
     private String name;
     /**
      * 用户id

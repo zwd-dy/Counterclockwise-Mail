@@ -2,6 +2,7 @@ package com.shadougao.email.execute;
 
 import com.alibaba.fastjson.JSON;
 import com.shadougao.email.common.result.MailEnum;
+import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.GetBeanUtil;
 import com.shadougao.email.entity.Mail;
@@ -11,6 +12,7 @@ import com.shadougao.email.entity.UserBindEmail;
 import com.shadougao.email.service.MailFileService;
 import com.shadougao.email.service.MailService;
 import com.shadougao.email.service.UserBindEmailService;
+import com.shadougao.email.service.impl.WebSocket;
 import com.shadougao.email.utils.EmailUtil;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.imap.IMAPStore;
@@ -347,7 +349,7 @@ public class MailParseExecute implements Runnable {
 
         try {
             // 准备连接服务器的会话信息
-            store = EmailUtil.connectImap(platform,bindEmail);
+            store = EmailUtil.connectImap(platform, bindEmail);
             folder = (IMAPFolder) store.getFolder("INBOX");
             folder.open(Folder.READ_ONLY);
             // Fetch 一下
@@ -356,7 +358,7 @@ public class MailParseExecute implements Runnable {
             profile.add(UIDFolder.FetchProfileItem.ENVELOPE);
             profile.add(UIDFolder.FetchProfileItem.FLAGS);
             profile.add(UIDFolder.FetchProfileItem.SIZE);
-            profile.add(UIDFolder.FetchProfileItem.CONTENT_INFO);
+//            profile.add(UIDFolder.FetchProfileItem.CONTENT_INFO);
 
             Message[] messages = null;
             if (isBatch) {
@@ -404,9 +406,8 @@ public class MailParseExecute implements Runnable {
                 } catch (Exception e) {
                     mail.setReceiveExceptionLog(e.getMessage());
                 } finally {
-//                    mailService.addOne(mail);
+                    // 记录
                     mailList.add(mail);
-//                    documents.add(Document.parse(JSON.toJSONString(mail)));
                 }
             }
 
@@ -429,12 +430,15 @@ public class MailParseExecute implements Runnable {
                 }
             }
 
-//            mailService.getBaseMapper().getMongoTemplate().getCollection("t_mail").insertMany(documents);
-            mailService.getBaseMapper().getMongoTemplate().insert(mailList,Mail.class);
+            // 批量将新邮箱记录到数据库中
+            mailService.getBaseMapper().getMongoTemplate().insert(mailList, Mail.class);
             if (isBatch) {
                 // 设置邮箱账号未同步
                 bindEmail.setSynchronizing(0);
                 bindEmailService.updateOne(bindEmail);
+            } else {
+                // 使用websocket通知前端
+                mailList.forEach(item -> WebSocket.sendOneMessage(String.valueOf(item.getUserId()), JSON.toJSONString(Result.success(item))));
             }
             System.out.println("完成");
         }

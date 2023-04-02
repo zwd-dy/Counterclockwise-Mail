@@ -1,5 +1,6 @@
 package com.shadougao.email.entity;
 
+import com.shadougao.email.annotation.MongoLikeQuery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,12 @@ public class Mail extends MongoBaseEntity {
     /**
      * 邮件主题
      */
+    @MongoLikeQuery
     private String subject;
     /**
      * 邮件正文
      */
+    @MongoLikeQuery
     private String content;
     /**
      * 发件人地址
@@ -46,7 +49,7 @@ public class Mail extends MongoBaseEntity {
      */
     private Long userId;
     /**
-     * 0.已发送    1.收件箱   2.草稿箱
+     * 0.已发送    1.收件箱   2.草稿箱   3.定时发送
      */
     private Integer type;
     /**
@@ -74,5 +77,13 @@ public class Mail extends MongoBaseEntity {
      * 收件的绑定邮箱
      */
     private String bindId;
+    /**
+     * 标签ID
+     */
+    private String[] tagIds;
+    /**
+     * 是否星标,    0:不是    1/是
+     */
+    private Integer isStar;
 
 }

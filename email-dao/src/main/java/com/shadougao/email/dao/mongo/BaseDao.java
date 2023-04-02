@@ -5,6 +5,7 @@ import com.shadougao.email.entity.MongoBaseEntity;
 import com.shadougao.email.entity.dto.PageData;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface BaseDao<T extends MongoBaseEntity> {
 
     T updateOne(T t, String id);
 
-
+    long updateMulti(Query query, Update update);
 
     /**
      * 只更新有值的属性
