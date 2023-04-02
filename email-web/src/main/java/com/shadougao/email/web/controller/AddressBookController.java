@@ -2,9 +2,10 @@ package com.shadougao.email.web.controller;
 
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.ResultEnum;
+import com.shadougao.email.common.utils.RedisUtil;
 import com.shadougao.email.common.utils.SecurityUtils;
-import com.shadougao.email.entity.AddressBook;
-import com.shadougao.email.entity.AddressBookGroup;
+import com.shadougao.email.config.RedisConfig;
+import com.shadougao.email.entity.*;
 import com.shadougao.email.entity.dto.PageData;
 import com.shadougao.email.service.AddressBookGroupService;
 import com.shadougao.email.service.AddressBookService;
@@ -19,7 +20,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/contacts")
 @RequiredArgsConstructor
-
 public class AddressBookController {
 
     private final AddressBookService addressBookService;
@@ -34,8 +34,10 @@ public class AddressBookController {
      */
     @GetMapping("/pageList")
     public Result<?> pageList(PageData<AddressBook> pageData, AddressBook addressBook) {
+        addressBook.setUserId(SecurityUtils.getCurrentUser().getId());
         return Result.success(addressBookService.pageList(pageData, addressBook));
     }
+
 
     /**
      * 添加联系人到通讯录

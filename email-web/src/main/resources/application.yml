@@ -15,6 +15,7 @@ spring:
   redis:
     database: 0
     host: 124.71.153.92
+#    host: 127.0.0.1
     port: 6379
     password: (\redis*nmsl/!!)
     #连接超时时间
@@ -135,3 +136,8 @@ rsa:
 
 upload:
   upload-path: J:\file\static\
+
+email:
+  cluster:
+    heart-beat-cycle: 60000   #单位毫秒，子节点心跳包周期
+    cluster-timeout: 300      #单位秒,子节点超过【timeout】秒没更新时间视为寄

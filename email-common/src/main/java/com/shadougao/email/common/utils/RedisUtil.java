@@ -328,6 +328,10 @@ public final class RedisUtil {
         }
     }
 
+    public Set<Object> hkeys(String key) {
+        return redisTemplate.opsForHash().keys(key);
+    }
+
 
     /**
      * 删除hash表中的值
@@ -649,7 +653,7 @@ public final class RedisUtil {
 
     }
 
-    public void publist(String channel,Object obj) {
-        redisTemplate.convertAndSend(channel,obj);
+    public void publist(String channel, Object obj) {
+        redisTemplate.convertAndSend(channel, obj);
     }
 }

@@ -37,15 +37,15 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookDao, AddressB
             throw new BadRequestException("邮箱格式有误，请检查！");
         }
         // 判断是否重复添加
-//        if (!Objects.isNull(addressBookDao.getOneByEmailUser(user.getId(), addressBook.getEmailAddress()))) {
-//            throw new BadRequestException("该联系人已在通讯录中，请勿重复添加");
-//        }
+        if (!Objects.isNull(addressBookDao.getOneByEmailUser(user.getId(), addressBook.getEmailAddress()))) {
+            throw new BadRequestException("该联系人已在通讯录中，请勿重复添加");
+        }
 
         // 完成添加
-//        addressBook.setUserId(user.getId());
-//        if (Objects.isNull(addressBookDao.addOne(addressBook))) {
-//            throw new BadRequestException("系统出错，请重新添加！");
-//        }
+        addressBook.setUserId(user.getId());
+        if (Objects.isNull(addressBookDao.addOne(addressBook))) {
+            throw new BadRequestException("系统出错，请重新添加！");
+        }
         return Result.success(addressBook);
     }
 

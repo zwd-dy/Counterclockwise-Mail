@@ -1,4 +1,4 @@
-package com.shadougao.email.service.impl;
+package com.shadougao.email.execute;
 
 import com.shadougao.email.common.result.MailEnum;
 import com.shadougao.email.common.utils.GetBeanUtil;
@@ -68,6 +68,9 @@ public class SendMailExecute implements Runnable {
 
             // 更新状态
             mail.setType(MailEnum.SEND_SUCCESS);
+            mail.setBindId(bindEmail.getId());
+            mail.setSendTime(System.currentTimeMillis());
+            mail.setSendState(MailEnum.SEND_SUCCESS);
 
         } catch (Exception e) {
             mail.setSendExceptionLog(e.getMessage());

@@ -26,7 +26,7 @@ public class AddressBook extends MongoBaseEntity {
     /**
      * 用户id
      */
-    private String userId;
+    private Long userId;
     /**
      * 分组Id
      */

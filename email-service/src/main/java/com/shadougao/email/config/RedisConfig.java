@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shadougao.email.annotation.RedisChannelListener;
 import com.shadougao.email.annotation.RedisResultCode;
 import com.shadougao.email.execute.RedisChannelListenerExecute;
-import com.shadougao.email.execute.SendMailExecutor;
+import com.shadougao.email.execute.MailExecutor;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.NettyCustomizer;
 import io.netty.bootstrap.Bootstrap;
@@ -250,25 +250,6 @@ public class RedisConfig extends CachingConfigurerSupport {
             }
         }
         return methodMap;
-    }
-
-
-    /**
-     * 发邮箱线程池
-     *
-     * @return
-     */
-    @Bean
-    public SendMailExecutor sendMailExecutor() {
-        SendMailExecutor sendMailExecutor = new SendMailExecutor();
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                4,
-                10,
-                100L,
-                TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(100));
-        sendMailExecutor.setExecutorService(executor);
-        return sendMailExecutor;
     }
 }
 

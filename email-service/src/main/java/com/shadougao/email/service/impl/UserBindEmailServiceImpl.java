@@ -1,17 +1,25 @@
 package com.shadougao.email.service.impl;
 
+import com.shadougao.email.common.result.MailEnum;
 import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.exception.BadRequestException;
+import com.shadougao.email.common.utils.GetBeanUtil;
 import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.dao.mongo.SysEmailPlatformDao;
 import com.shadougao.email.dao.mongo.UserBindEmailDao;
+import com.shadougao.email.entity.Mail;
 import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
+import com.shadougao.email.execute.MailExecutor;
+import com.shadougao.email.execute.MailParseExecute;
+import com.shadougao.email.execute.SendMailExecute;
+import com.shadougao.email.listener.RedisMainListener;
 import com.shadougao.email.service.UserBindEmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -20,6 +28,7 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
 
     private final UserBindEmailDao bindEmailDao;
     private final SysEmailPlatformDao platformDao;
+    private final MailExecutor mailExecutor;
 
     /**
      * 用户绑定邮箱
@@ -37,20 +46,29 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
             throw new BadRequestException("暂不支持该邮箱平台！");
         }
         // 判断账号是否已绑定
-//        if (!Objects.isNull(bindEmailDao.getByEmailUser(user.getId(), bindEmail.getEmailUser()))) {
-//            throw new BadRequestException("该邮箱账号已绑定");
-//        }
+        if (!Objects.isNull(bindEmailDao.getByEmailUser(user.getId(), bindEmail.getEmailUser()))) {
+            throw new BadRequestException("该邮箱账号已绑定");
+        }
         // 验证邮箱信息
         if (!SendMailExecute.checkAuth(platform, bindEmail)) {
             throw new BadRequestException("邮箱账号验证失败，请仔细检查账号和密码！");
         }
 
         // 完成绑定
-//        bindEmail.setUserId(user.getId());
+        bindEmail.setUserId(user.getId());
         UserBindEmail newBind = bindEmailDao.addOne(bindEmail);
         if (Objects.isNull(newBind)) {
             throw new BadRequestException("绑定失败，请重试");
         }
+
+        // 开启同步邮箱线程
+        MailParseExecute parse = new MailParseExecute();
+        parse.setBindEmail(bindEmail);
+        parse.setPlatform(platform);
+        parse.setBatch(true);
+        mailExecutor.getParseExecutorService().execute(parse);
+        // 为某节点添加分配任务
+        new RedisMainListener().addTask(newBind);
         return Result.success(newBind);
     }
 
@@ -64,7 +82,9 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
 
         // 完成解绑
         bindEmailDao.delOne(id);
-        //TODO 解绑后的其他操作
+        // 为某节点删除该任务
+        new RedisMainListener().delTask(id);
+//        GetBeanUtil.getApplicationContext().getBean(RedisMainListener.class).delTask(id);
         return Result.success("解绑成功");
     }
 
@@ -90,9 +110,8 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
     @Override
     public Result emailBindList() {
         SysUser user = SecurityUtils.getCurrentUser();
-//        List<UserBindEmail> bindEmails = bindEmailDao.emailBindList(user.getId());
-//        return Result.success(bindEmails);
-        return Result.success();
+        List<UserBindEmail> bindEmails = bindEmailDao.emailBindList(user.getId());
+        return Result.success(bindEmails);
     }
 
 }

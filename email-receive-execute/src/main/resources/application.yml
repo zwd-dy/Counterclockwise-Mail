@@ -14,6 +14,7 @@ spring:
   redis:
     database: 0
     host: 124.71.153.92
+#    host: 127.0.0.1
     port: 6379
     password: (\redis*nmsl/!!)
     #连接超时时间
@@ -54,3 +55,8 @@ mongo:
     sendBufferSize: 0
 
 
+email:
+  listener:
+    user-online-cycle: 10   #单位秒，用户在线时，邮件的监听周期
+#    normal-cycle: 300 #单位秒，用户不在线时，也就是空闲时的监听周期
+    normal-cycle: 10 #单位秒，用户不在线时，也就是空闲时的监听周期

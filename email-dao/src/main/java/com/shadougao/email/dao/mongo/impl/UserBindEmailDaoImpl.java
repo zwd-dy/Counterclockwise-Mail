@@ -17,16 +17,16 @@ public class UserBindEmailDaoImpl extends BaseDaoImpl<UserBindEmail> implements 
 
 
     @Override
-    public UserBindEmail getByEmailUser(String userId,String emailUser) {
+    public UserBindEmail getByEmailUser(Long userId,String emailUser) {
         Query query = new Query();
         query.addCriteria(Criteria.where("emailUser").is(emailUser).and("userId").is(userId));
        return this.findOne(query);
     }
 
     @Override
-    public List<UserBindEmail> emailBindList(String id) {
+    public List<UserBindEmail> emailBindList(Long userId) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(("userId")).is(id));
+        query.addCriteria(Criteria.where(("userId")).is(userId));
         return this.find(query);
     }
 }

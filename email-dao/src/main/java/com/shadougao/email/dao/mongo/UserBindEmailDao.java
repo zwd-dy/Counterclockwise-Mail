@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface UserBindEmailDao extends BaseDao<UserBindEmail> {
 
-    UserBindEmail getByEmailUser(String userId,String emailUser);
+    UserBindEmail getByEmailUser(Long userId,String emailUser);
 
-    List<UserBindEmail> emailBindList(String id);
+    List<UserBindEmail> emailBindList(Long userId);
 
 }

@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.connection.SubscriptionListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -37,7 +38,8 @@ public class RedisChannelListenerExecute implements MessageListener {
     public void onMessage(Message message, byte[] bytes) {
         RedisResult result = JSONObject.parseObject(message.getBody(), RedisResult.class);
         Method method = redisListenerMap.get(result.getCode());
-        method.invoke(GetBeanUtil.getApplicationContext().getBean(method.getDeclaringClass()),result);
+//        method.invoke(GetBeanUtil.getApplicationContext().getBean(method.getDeclaringClass()),result);
+        method.invoke(method.getDeclaringClass().newInstance(),result);
     }
 
     //字节码转化为对象
@@ -49,5 +51,6 @@ public class RedisChannelListenerExecute implements MessageListener {
         ObjectInputStream oi = new ObjectInputStream(bi);
         return oi.readObject();
     }
+
 
 }
