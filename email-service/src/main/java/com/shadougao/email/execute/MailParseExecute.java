@@ -9,8 +9,10 @@ import com.shadougao.email.entity.Mail;
 import com.shadougao.email.entity.MailFile;
 import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.UserBindEmail;
+import com.shadougao.email.rule.ReceiveRuleExecutor;
 import com.shadougao.email.service.MailFileService;
 import com.shadougao.email.service.MailService;
+import com.shadougao.email.service.ReceiveRuleService;
 import com.shadougao.email.service.UserBindEmailService;
 import com.shadougao.email.service.impl.WebSocket;
 import com.shadougao.email.utils.EmailUtil;
@@ -19,6 +21,7 @@ import com.sun.mail.imap.IMAPStore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.jsoup.helper.StringUtil;
 
@@ -34,6 +37,7 @@ import java.util.*;
  */
 @Getter
 @Setter
+@Slf4j
 public class MailParseExecute implements Runnable {
     private long uid;
     private UserBindEmail bindEmail;
@@ -41,6 +45,7 @@ public class MailParseExecute implements Runnable {
     private MailService mailService;
     private MailFileService fileService;
     private UserBindEmailService bindEmailService;
+    private ReceiveRuleService ruleService;
     private MimeMessage mimeMessage = null;
     private String saveAttachPath = "D:\\file\\static"; //附件下载后的存放目录
     private StringBuffer bodytext = new StringBuffer();//存放邮件内容
@@ -50,6 +55,7 @@ public class MailParseExecute implements Runnable {
         this.fileService = GetBeanUtil.getApplicationContext().getBean(MailFileService.class);
         this.mailService = GetBeanUtil.getApplicationContext().getBean(MailService.class);
         this.bindEmailService = GetBeanUtil.getApplicationContext().getBean(UserBindEmailService.class);
+        this.ruleService = GetBeanUtil.getApplicationContext().getBean(ReceiveRuleService.class);
     }
 
 
@@ -358,7 +364,7 @@ public class MailParseExecute implements Runnable {
             profile.add(UIDFolder.FetchProfileItem.ENVELOPE);
             profile.add(UIDFolder.FetchProfileItem.FLAGS);
             profile.add(UIDFolder.FetchProfileItem.SIZE);
-//            profile.add(UIDFolder.FetchProfileItem.CONTENT_INFO);
+            profile.add(UIDFolder.FetchProfileItem.CONTENT_INFO);
 
             Message[] messages = null;
             if (isBatch) {
@@ -402,12 +408,12 @@ public class MailParseExecute implements Runnable {
 //                    if (isContainAttach((Part) messages[i])) {
 //                        saveAttachMent((Part) messages[i]);
 //                    }
-                    System.out.println(i + ", subject：" + mail.getSubject());
                 } catch (Exception e) {
                     mail.setReceiveExceptionLog(e.getMessage());
                 } finally {
                     // 记录
                     mailList.add(mail);
+                    log.info("邮件[{}]：【{}】解析完成", mail.getUid(), mail.getSubject());
                 }
             }
 
@@ -437,10 +443,12 @@ public class MailParseExecute implements Runnable {
                 bindEmail.setSynchronizing(0);
                 bindEmailService.updateOne(bindEmail);
             } else {
+                // 使用收信规则
+                ruleService.executeRule(mailList);
                 // 使用websocket通知前端
                 mailList.forEach(item -> WebSocket.sendOneMessage(String.valueOf(item.getUserId()), JSON.toJSONString(Result.success(item))));
             }
-            System.out.println("完成");
+            log.info("邮件解析完毕");
         }
 
     }

@@ -1,0 +1,62 @@
+server:
+  port: 6666
+spring:
+  application:
+    name: email-receive-execute
+  # ==== rabbitmq ====
+  rabbitmq:
+    host: 121.37.225.134
+    port: 5672
+    username: email
+    password: nmcbvivo50gkdtmd
+    virtual-host: /
+  #  ==== redis ====
+  redis:
+    database: 0
+    host: 124.71.153.92
+#    host: 127.0.0.1
+    port: 6379
+    password: (\redis*nmsl/!!)
+    #连接超时时间
+    timeout: 5000
+    main-channel: mainChannel
+    execute-channel: executeChannel
+
+  #    ==== mongodb ====
+  data:
+    mongodb:
+      #      uri: mongodb://124.71.153.92:27017/
+      uri: mongodb://email:*%2Femailasddsa#@124.71.153.92:27017/?authSource=admin
+      database: email
+    web:
+      pageable:
+        one-indexed-parameters: false
+
+mongo:
+  config:
+    minConnectionPerHost: 0
+    maxConnectionPerHost: 100
+    threadsAllowedToBlockForConnectionMultiplier: 5
+    serverSelectionTimeout: 30000
+    maxWaitTime: 10000
+    maxConnectionIdleTime: 1000
+    maxConnectionLifeTime: 1000
+    connectTimeout: 10000
+    socketTimeout: 5000
+    socketKeepAlive: true
+    sslEnabled: false
+    sslInvalidHostNameAllowed: false
+    alwaysUseMBeans: false
+    heartbeatFrequency: 500
+    minHeartbeatFrequency: 20000
+    heartbeatSocketTimeout: 20000
+    localThreshold: 15
+    receiveBufferSize: 0
+    sendBufferSize: 0
+
+
+email:
+  listener:
+    user-online-cycle: 10   #单位秒，用户在线时，邮件的监听周期
+#    normal-cycle: 300 #单位秒，用户不在线时，也就是空闲时的监听周期
+    normal-cycle: 10 #单位秒，用户不在线时，也就是空闲时的监听周期

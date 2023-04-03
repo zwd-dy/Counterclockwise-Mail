@@ -184,6 +184,9 @@ public class SendMailExecute implements Runnable {
      */
     public List<BodyPart> constructFileBody(String[] fileIds, MailFileService fileService) throws MessagingException, UnsupportedEncodingException {
         List<BodyPart> fileBodyList = new ArrayList<>();
+        if(fileIds == null || fileIds.length<=0){
+            return fileBodyList;
+        }
         // 获取文件存储在数据库的详细信息
         List<MailFile> files = fileService.getByIds(Arrays.asList(fileIds));
         for (MailFile file : files) {
