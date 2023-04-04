@@ -72,7 +72,7 @@ public class RedisExecuteListener {
         }
         // 分配任务
         taskRetrieve(null);
-        log.info("[{}] - 成功连接到主程序");
+        log.info("[{}] - 成功连接到主程序",globalConfig.nodeName);
     }
 
     /**
@@ -169,7 +169,7 @@ public class RedisExecuteListener {
             MailListener t = threads.get(i);
             if (t.getBindEmail().getUserId() == userId) {
                 t.setSleepTime(globalConfig.userOnlineCycle);
-                log.info("[{}] - 用户id：{} 上线，修改线程周期为{}秒", globalConfig.nodeName, userId, globalConfig.userOnlineCycle);
+                log.info("[{}] - 用户id：{} 上线，修改线程[{}]周期为{}秒", globalConfig.nodeName, userId,t.getBindEmail().getEmailUser(), globalConfig.userOnlineCycle);
             }
         }
     }
@@ -185,7 +185,7 @@ public class RedisExecuteListener {
             MailListener t = threads.get(i);
             if (t.getBindEmail().getUserId() == userId) {
                 t.setSleepTime(globalConfig.normalCycle);
-                log.info("[{]] - 用户id：{} 离线，修改线程周期为{}秒", globalConfig.nodeName, userId, globalConfig.normalCycle);
+                log.info("[{}] - 用户id：{} 离线，修改线程周期为{}秒", globalConfig.nodeName, userId, globalConfig.normalCycle);
             }
         }
     }
@@ -206,7 +206,6 @@ public class RedisExecuteListener {
                 listener.setPlatform(platforms.stream().filter(p -> bindEmail.getPlatformId().equals(p.getId())).findFirst().get());
                 // 设置轮询周期（秒级）
                 listener.setSleepTime(globalConfig.normalCycle);
-                mailTask.getThreads().add(listener);
                 // 执行
                 mailTask.getPoolExecutor().execute(listener);
             }

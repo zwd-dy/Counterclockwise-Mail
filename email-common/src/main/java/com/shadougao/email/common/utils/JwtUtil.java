@@ -93,7 +93,7 @@ public class JwtUtil {
     public static void main(String[] args) throws Exception {
         Claims claims = parseJWT("eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJiYzhmNDY3MWI5MjY0NjVmYjYzMzBmN2NjZTk5OGUxYSIsInN1YiI6IjEiLCJpc3MiOiJ6d2QiLCJpYXQiOjE2Nzg0NDU4MDEsImV4cCI6MTY3ODQ0OTQwMX0.qInWRJNvcvnde05k2g9u9_j3LsM8EAdGaLY8KBlvBUU");
         String subject = claims.getSubject();
-        System.out.println(subject);
+//        System.out.println(subject);
     }
 
     /**

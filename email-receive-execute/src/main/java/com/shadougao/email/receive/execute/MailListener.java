@@ -78,7 +78,7 @@ public class MailListener implements Runnable {
                 Message[] messages = folder.search(comparisonTermGe);
                 int newCount = messages.length;
 
-                log.debug("[{}] {}，时间范围：{}，邮件数：{}",globalConfig.nodeName,Thread.currentThread().getName(),DateUtil.format(date,"YYYY-mm-dd"),newCount);
+                log.info("[{}] {}，时间范围：{}，邮件数：{}",globalConfig.nodeName,Thread.currentThread().getName(),DateUtil.format(date,"YYYY-MM-dd"),newCount);
 
                 if (newCount != count) {
 //                int i = newCount - count;
@@ -114,7 +114,7 @@ public class MailListener implements Runnable {
                             // 向本地缓存检测该uid有没有被检测过
                             if (!detectedUids.contains(uid)) {
                                 newUids.add(uid);
-                                System.out.println(uid);
+//                                System.out.println(uid);
                                 // 向缓存集合加入检测到的uid
                                 detectedUids.add(uid);
                             }
