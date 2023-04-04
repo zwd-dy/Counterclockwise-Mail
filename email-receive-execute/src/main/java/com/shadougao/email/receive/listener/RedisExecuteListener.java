@@ -72,6 +72,7 @@ public class RedisExecuteListener {
         }
         // 分配任务
         taskRetrieve(null);
+        log.info("[{}] - 成功连接到主程序");
     }
 
     /**
@@ -91,9 +92,10 @@ public class RedisExecuteListener {
             threads.remove(t);
             j++;
         }
-        System.out.println(Thread.currentThread().getName() + "，当前管理线程数：" + mailTask.getThreads().size());
+//        System.out.println(Thread.currentThread().getName() + "，当前管理线程数：" + mailTask.getThreads().size());
         // 重新分配任务
         getTask();
+        log.info("[{}] - 重新分配任务，当前管理线程数：{}",globalConfig.nodeName,mailTask.getThreads().size());
     }
 
     /**
@@ -109,6 +111,7 @@ public class RedisExecuteListener {
         }
         UserBindEmail bindEmail = (UserBindEmail) result.getData();
         addTaskListener(bindEmail);
+        log.info("[{}] - 加入邮箱账号监听线程，账号：{}，绑定ID：{}",globalConfig.nodeName,bindEmail.getEmailUser(),bindEmail.getId());
     }
 
     /**
@@ -120,6 +123,7 @@ public class RedisExecuteListener {
         if (objId != null) {
             String bindId = (String) objId;
             delTaskListener(bindId);
+            log.info("[{}] - 邮箱绑定ID：{} 删除监听线程",globalConfig.nodeName,bindId);
         }
     }
 
@@ -136,6 +140,7 @@ public class RedisExecuteListener {
             // 将新任务添加到监听线程中
             UserBindEmail bindEmail = bindEmailDao.getOneById(bindId);
             addTaskListener(bindEmail);
+            log.info("[{}] - 更新邮箱信息，重新启动监听线程，邮箱账号：{}，bindId：{}", globalConfig.nodeName, bindEmail.getEmailUser(), bindId);
         }
     }
 
@@ -149,7 +154,39 @@ public class RedisExecuteListener {
     public void heartBeat(RedisResult result) {
         if (globalConfig.nodeName != null) {
             redisUtil.hset(KEY_NODE_LAST_HEART, globalConfig.nodeName, System.currentTimeMillis() / 1000);
-            log.info(globalConfig.nodeName + " 确认存活！");
+            log.info("[{}] - 确认存活！", globalConfig.nodeName);
+        }
+    }
+
+    /**
+     * 用户上线，修改周期
+     */
+    @RedisResultCode(RedisResultEnum.USER_ONLINE)
+    public void userOnline(RedisResult result) {
+        Long userId = (Long) result.getData();
+        List<MailListener> threads = mailTask.getThreads();
+        for (int i = 0; i < threads.size(); i++) {
+            MailListener t = threads.get(i);
+            if (t.getBindEmail().getUserId() == userId) {
+                t.setSleepTime(globalConfig.userOnlineCycle);
+                log.info("[{}] - 用户id：{} 上线，修改线程周期为{}秒", globalConfig.nodeName, userId, globalConfig.userOnlineCycle);
+            }
+        }
+    }
+
+    /**
+     * 用户离线，修改周期
+     */
+    @RedisResultCode(RedisResultEnum.USER_OFFLINE)
+    public void userOffline(RedisResult result) {
+        Long userId = (Long) result.getData();
+        List<MailListener> threads = mailTask.getThreads();
+        for (int i = 0; i < threads.size(); i++) {
+            MailListener t = threads.get(i);
+            if (t.getBindEmail().getUserId() == userId) {
+                t.setSleepTime(globalConfig.normalCycle);
+                log.info("[{]] - 用户id：{} 离线，修改线程周期为{}秒", globalConfig.nodeName, userId, globalConfig.normalCycle);
+            }
         }
     }
 
@@ -169,6 +206,7 @@ public class RedisExecuteListener {
                 listener.setPlatform(platforms.stream().filter(p -> bindEmail.getPlatformId().equals(p.getId())).findFirst().get());
                 // 设置轮询周期（秒级）
                 listener.setSleepTime(globalConfig.normalCycle);
+                mailTask.getThreads().add(listener);
                 // 执行
                 mailTask.getPoolExecutor().execute(listener);
             }

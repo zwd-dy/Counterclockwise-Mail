@@ -8,7 +8,7 @@ spring:
   #  ==== redis ====
   redis:
     database: 0
-    host: 124.71.153.92
+    host: 121.37.225.134
 #    host: 127.0.0.1
     port: 6379
     password: (\redis*nmsl/!!)

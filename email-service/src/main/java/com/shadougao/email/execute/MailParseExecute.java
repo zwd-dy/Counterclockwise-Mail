@@ -46,6 +46,7 @@ public class MailParseExecute implements Runnable {
     private MailFileService fileService;
     private UserBindEmailService bindEmailService;
     private ReceiveRuleService ruleService;
+    private Integer fileCount;
     private MimeMessage mimeMessage = null;
     private String saveAttachPath = "D:\\file\\static"; //附件下载后的存放目录
     private StringBuffer bodytext = new StringBuffer();//存放邮件内容
@@ -257,6 +258,7 @@ public class MailParseExecute implements Runnable {
                         fileName = MimeUtility.decodeText(fileName);
                     }
                     saveFile(fileName, mpart.getInputStream());
+                    fileCount++;
                 } else if (mpart.isMimeType("multipart/*")) {
                     saveAttachMent(mpart);
                 } else {
@@ -265,6 +267,7 @@ public class MailParseExecute implements Runnable {
                             && (fileName.toLowerCase().indexOf("GB2312") != -1)) {
                         fileName = MimeUtility.decodeText(fileName);
                         saveFile(fileName, mpart.getInputStream());
+                        fileCount++;
                     }
                 }
             }
@@ -404,6 +407,8 @@ public class MailParseExecute implements Runnable {
                     bodytext.setLength(0);
                     getMailContent((Part) messages[i]);
                     mail.setContent(getBodyText());
+                    mail.setFileId(new String[fileCount]);
+                    fileCount=0;
                     // TODO 判断附件是否存在
 //                    if (isContainAttach((Part) messages[i])) {
 //                        saveAttachMent((Part) messages[i]);

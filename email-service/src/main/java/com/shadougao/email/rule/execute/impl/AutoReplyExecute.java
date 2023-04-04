@@ -40,7 +40,7 @@ public class AutoReplyExecute extends BaseRuleExecute{
         SysEmailPlatform platform = platformService.getOneById(bindEmail.getPlatformId());
 
         Mail replyMail = new Mail();
-        replyMail.setSubject("回复：【"+mail.getSubject()+"】");
+        replyMail.setSubject("回复");
         replyMail.setFrom(bindEmail.getEmailUser());
         replyMail.setRecipients(from.split(","));
         replyMail.setSendState(MailEnum.SEND_ING);

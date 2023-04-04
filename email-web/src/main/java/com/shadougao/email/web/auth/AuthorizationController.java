@@ -1,4 +1,4 @@
-package com.shadougao.email.config.security.auth;
+package com.shadougao.email.web.auth;
 
 
 import com.shadougao.email.common.result.Result;
@@ -8,21 +8,21 @@ import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.common.utils.TokenProvider;
 import com.shadougao.email.config.RsaProperties;
 import com.shadougao.email.config.security.auth.rest.AnonymousDeleteMapping;
+import com.shadougao.email.config.security.auth.rest.AnonymousGetMapping;
 import com.shadougao.email.config.security.auth.rest.AnonymousPostMapping;
 import com.shadougao.email.config.security.bean.OnlineUserService;
 import com.shadougao.email.config.security.bean.SecurityProperties;
+import com.shadougao.email.entity.AddUserDto;
 import com.shadougao.email.entity.dto.AuthUserDto;
 import com.shadougao.email.entity.dto.JwtUserDto;
+import com.shadougao.email.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -38,6 +38,8 @@ public class AuthorizationController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final OnlineUserService onlineUserService;
+    private final UserService userService;
+
 
     @AnonymousPostMapping("/login")
     public Result<?> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
@@ -71,6 +73,17 @@ public class AuthorizationController {
         return Result.success(authInfo);
     }
 
+    @AnonymousPostMapping("/register")
+    public Result<?> registerUser(@RequestBody @Validated AddUserDto resource) {
+        userService.addUser(resource);
+        return Result.success();
+    }
+
+    @AnonymousGetMapping("/getValidCode")
+    public Result<?> getValidCode(@RequestParam String username, @RequestParam String email) {
+        userService.getValidCode(username, email);
+        return Result.success();
+    }
     @GetMapping(value = "/info")
     public Result<?> getUserInfo() {
         return Result.success(SecurityUtils.getCurrentUser());
@@ -81,4 +94,5 @@ public class AuthorizationController {
         onlineUserService.logout(tokenProvider.getToken(request));
         return Result.success();
     }
+
 }

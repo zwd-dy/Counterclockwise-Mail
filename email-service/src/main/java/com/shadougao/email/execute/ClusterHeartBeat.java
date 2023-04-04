@@ -45,14 +45,14 @@ public class ClusterHeartBeat implements Runnable {
                 // 获取子节点最后一次心跳时间
                 Object objLastTime = redisUtil.hget(KEY_NODE_LAST_HEART, nodeName);
                 long lastTime = time;
-                if (objLastTime != null) {
-                    lastTime = (long) objLastTime;
+                if (objLastTime == null) {
+                    lastTime = 0l;
                 }
 
                 // 如果子节点超过 [timeout] 没有更新时间，说明寄了，需要给所有节点重新分配任务
                 if (time - lastTime > timeout) {   // 秒单位对比
                     // 剔除该子节点信息
-                    redisUtil.del(nodeName);
+                    redisUtil.setRemove(KEY_NODE_LIST,nodeName);
                     redisUtil.hdel(KEY_NODE_LAST_HEART, nodeName);
                     redisUtil.hdel(KEY_NODE_TASK, nodeName);
                     // 重新分配任务

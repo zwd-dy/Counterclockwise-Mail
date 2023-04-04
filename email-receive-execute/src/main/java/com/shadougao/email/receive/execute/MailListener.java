@@ -1,7 +1,9 @@
 package com.shadougao.email.receive.execute;
 
+import cn.hutool.core.date.DateUtil;
 import com.shadougao.email.dao.mongo.MailDao;
 import com.shadougao.email.entity.*;
+import com.shadougao.email.receive.config.GlobalConfig;
 import com.shadougao.email.receive.config.RedisConfig;
 import com.shadougao.email.receive.utils.GetBeanUtil;
 import com.shadougao.email.receive.utils.RedisUtil;
@@ -35,6 +37,7 @@ public class MailListener implements Runnable {
     private RedisUtil redisUtil;
     private RedisConfig redisConfig;
     private MailTask mailTask;
+    private GlobalConfig globalConfig;
 
     // 检测到的uid集合
     private List<String> detectedUids = new ArrayList<>();
@@ -43,6 +46,7 @@ public class MailListener implements Runnable {
         mailDao = GetBeanUtil.getApplicationContext().getBean(MailDao.class);
         redisUtil = GetBeanUtil.getApplicationContext().getBean(RedisUtil.class);
         redisConfig = GetBeanUtil.getApplicationContext().getBean(RedisConfig.class);
+        globalConfig = GetBeanUtil.getApplicationContext().getBean(GlobalConfig.class);
         mailTask = GetBeanUtil.getApplicationContext().getBean(MailTask.class);
     }
 
@@ -72,9 +76,9 @@ public class MailListener implements Runnable {
                 folder.open(Folder.READ_WRITE);
 
                 Message[] messages = folder.search(comparisonTermGe);
-//            int newCount = folder.getMessageCount();
                 int newCount = messages.length;
-                System.out.println(Thread.currentThread().getName() + "，" + newCount);
+
+                log.debug("[{}] {}，时间范围：{}，邮件数：{}",globalConfig.nodeName,Thread.currentThread().getName(),DateUtil.format(date,"YYYY-mm-dd"),newCount);
 
                 if (newCount != count) {
 //                int i = newCount - count;
@@ -122,6 +126,7 @@ public class MailListener implements Runnable {
                         map.put("bindEmail", bindEmail);
                         map.put("newUids", newUids);
                         redisUtil.publist(redisConfig.executeChannel, new RedisResult(RedisResultEnum.NEW_MAIL_UIDS, map));
+                        log.info("[{}] - 检测到 {} 条新邮件，已转交给主程序解析内容",globalConfig.nodeName,newUids.size());
                     }
                     count = newCount;
                     date = new Date();
@@ -132,6 +137,7 @@ public class MailListener implements Runnable {
             }
         } catch (Exception e) {
             log.error(e.getMessage());
+            log.warn("[{}] - {}，发生异常，准备重新启动监听",globalConfig.nodeName,Thread.currentThread().getName());
             // 断线重连
             MailListener listener = new MailListener();
             // 设置监控邮箱

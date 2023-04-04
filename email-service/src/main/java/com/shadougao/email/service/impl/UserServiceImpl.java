@@ -13,6 +13,7 @@ import com.shadougao.email.dao.mysql.SysUserRepository;
 import com.shadougao.email.entity.AddUserDto;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.service.UserService;
+import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
     private final RedisUtil redisUtil;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class,transactionManager = "transactionManager")
     public void addUser(AddUserDto resource) {
         /* 判断验证码是否存在 */
         String key = CacheKey.USER_ADD + resource.getSysUser().getEmail();
@@ -56,6 +57,7 @@ public class UserServiceImpl implements UserService {
         AssertUtil.validParam(!Objects.equals(pass, confirmPass), "两次密码输入不一致!");
         /* 密码加密 */
         resource.getSysUser().setPassword(passwordEncoder.encode(pass));
+        user.setEnable(true);
         sysUserRepository.save(user);
         /* 删除缓存 */
         redisUtil.del(key);
@@ -63,6 +65,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void getValidCode(String username, String email) {
+        if(StringUtil.isNullOrEmpty(email)){
+            throw new BadRequestException("请输入邮箱");
+        }
         /* 用户名与邮箱均为唯一字段 */
         SysUser sysUser = sysUserRepository.findByUsernameOrEmail(username, email);
         if (Objects.nonNull(sysUser)) {
