@@ -6,6 +6,7 @@ import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.WsResult;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.GetBeanUtil;
+import com.shadougao.email.common.utils.RedisUtil;
 import com.shadougao.email.common.utils.SecurityUtils;
 import com.shadougao.email.dao.mongo.SysEmailPlatformDao;
 import com.shadougao.email.dao.mongo.UserBindEmailDao;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,9 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
     private final SysEmailPlatformDao platformDao;
     private final MailService mailService;
     private final MailExecutor mailExecutor;
+    private final RedisUtil redisUtil;
+
+    private static final String PREFIX = "email:lockbind";
 
     /**
      * 用户绑定邮箱
@@ -125,20 +130,20 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
     @Override
     public void pullMail(String bindId) {
         UserBindEmail bindEmail = bindEmailDao.getOneById(bindId);
-        if(Objects.isNull(bindEmail)){
+        if (Objects.isNull(bindEmail)) {
             throw new BadRequestException("邮箱账号不存在");
         }
         SysEmailPlatform platform = platformDao.getOneById(bindEmail.getPlatformId());
-        if(Objects.isNull(platform)){
+        if (Objects.isNull(platform)) {
             throw new BadRequestException("邮箱平台不存在，请联系管理员");
         }
         // 查看是否有其他账号在同步中
-        if(this.isPull()){
+        if (this.isPull()) {
             throw new BadRequestException("请等待其他邮箱同步完成！");
         }
 
         // 通知前端邮件准备
-        WebSocket.sendOneMessage(String.valueOf(bindEmail.getUserId()), JSON.toJSONString(WsResult.message(WsResult.PULL_READY,null)));
+        WebSocket.sendOneMessage(String.valueOf(bindEmail.getUserId()), JSON.toJSONString(WsResult.message(WsResult.PULL_READY, null)));
         MailParseExecute parse = new MailParseExecute();
         parse.setBindEmail(bindEmail);
         parse.setPlatform(platform);
@@ -151,10 +156,20 @@ public class UserBindEmailServiceImpl extends ServiceImpl<UserBindEmailDao, User
         SysUser user = SecurityUtils.getCurrentUser();
         List<UserBindEmail> bindEmails = bindEmailDao.emailBindList(user.getId());
         for (int i = 0; i < bindEmails.size(); i++) {
-            if (bindEmails.get(i).getSynchronizing() == 1) {
+            if ("1".equals(String.valueOf(redisUtil.hget(PREFIX, bindEmails.get(i).getId())))) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public void lockBindMail(String bindId) {
+        redisUtil.hset(PREFIX, bindId, "1", 300);
+    }
+
+    @Override
+    public void unlockBindMail(String bindId) {
+        redisUtil.hdel(PREFIX, bindId);
     }
 }

@@ -6,6 +6,7 @@ import com.shadougao.email.common.result.Result;
 import com.shadougao.email.common.result.WsResult;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.GetBeanUtil;
+import com.shadougao.email.common.utils.RedisUtil;
 import com.shadougao.email.entity.Mail;
 import com.shadougao.email.entity.MailFile;
 import com.shadougao.email.entity.SysEmailPlatform;
@@ -35,6 +36,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 有一封邮件就需要建立一个ReciveMail对象
@@ -50,6 +52,7 @@ public class MailParseExecute implements Runnable {
     private MailFileService fileService;
     private UserBindEmailService bindEmailService;
     private ReceiveRuleService ruleService;
+    private RedisUtil redisUtil;
     private Integer fileCount = 0;
     private MimeMessage mimeMessage = null;
     private String saveAttachPath = "D:\\file\\static"; //附件下载后的存放目录
@@ -61,6 +64,7 @@ public class MailParseExecute implements Runnable {
         this.mailService = GetBeanUtil.getApplicationContext().getBean(MailService.class);
         this.bindEmailService = GetBeanUtil.getApplicationContext().getBean(UserBindEmailService.class);
         this.ruleService = GetBeanUtil.getApplicationContext().getBean(ReceiveRuleService.class);
+        this.redisUtil = GetBeanUtil.getApplicationContext().getBean(RedisUtil.class);
     }
 
 
@@ -395,8 +399,9 @@ public class MailParseExecute implements Runnable {
             Message[] messages = null;
             if (isBatch) {
                 // 设置邮箱账号为同步中
-                bindEmail.setSynchronizing(1);
-                bindEmailService.updateOne(bindEmail);
+                bindEmailService.lockBindMail(bindEmail.getId());
+//                bindEmail.setSynchronizing(1);
+//                bindEmailService.updateOne(bindEmail);
                 existMail = mailService.getBaseMapper().find(new Query().addCriteria(Criteria.where("userId").is(bindEmail.getUserId()).and("bindId").is(bindEmail.getId())));
                 messages = folder.getMessages();
                 // 向前端实时更新同步进度
@@ -484,8 +489,9 @@ public class MailParseExecute implements Runnable {
             mailService.getBaseMapper().getMongoTemplate().insert(mailList, Mail.class);
             if (isBatch) {
                 // 设置邮箱账号未同步
-                bindEmail.setSynchronizing(0);
-                bindEmailService.updateOne(bindEmail);
+                bindEmailService.unlockBindMail(bindEmail.getId());
+//                bindEmail.setSynchronizing(0);
+//                bindEmailService.updateOne(bindEmail);
                 WebSocket.sendOneMessage(String.valueOf(bindEmail.getUserId()), JSON.toJSONString(WsResult.message(WsResult.PULL_MAIL_SUCCESS,null)));
             } else {
                 // 使用收信规则
