@@ -20,6 +20,7 @@ public interface BaseDao<T extends MongoBaseEntity> {
     void delOne(String id);
 
     void batchDel(List<String> names);
+    void batchDel(Query query);
 
     T addOne(T t);
 

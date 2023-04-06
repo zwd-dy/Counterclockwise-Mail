@@ -59,4 +59,12 @@ public class SysEmailPlatformController {
         return bindService.emailUpdate(bindEmail);
     }
 
+    /**
+     * 邮件同步
+     */
+    @PostMapping("/pullMail/{id}")
+    public Result<?> pullMail(@PathVariable("id") String bindId){
+        bindService.pullMail(bindId);
+        return Result.success();
+    }
 }

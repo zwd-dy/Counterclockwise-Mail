@@ -3,6 +3,7 @@ package com.shadougao.email.service;
 import com.shadougao.email.dao.mongo.BaseDao;
 import com.shadougao.email.entity.MongoBaseEntity;
 import com.shadougao.email.entity.dto.PageData;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public interface IService<T extends MongoBaseEntity> {
     void delOne(String id);
 
     void batchDel(List<String> names);
+    void batchDel(Query query);
 
     T addOne(T t);
 

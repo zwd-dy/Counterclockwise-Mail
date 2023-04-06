@@ -3,6 +3,7 @@ package com.shadougao.email.execute;
 import com.alibaba.fastjson.JSON;
 import com.shadougao.email.common.result.MailEnum;
 import com.shadougao.email.common.result.Result;
+import com.shadougao.email.common.result.WsResult;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.GetBeanUtil;
 import com.shadougao.email.entity.Mail;
@@ -24,6 +25,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.jsoup.helper.StringUtil;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -46,7 +50,7 @@ public class MailParseExecute implements Runnable {
     private MailFileService fileService;
     private UserBindEmailService bindEmailService;
     private ReceiveRuleService ruleService;
-    private Integer fileCount;
+    private Integer fileCount = 0;
     private MimeMessage mimeMessage = null;
     private String saveAttachPath = "D:\\file\\static"; //附件下载后的存放目录
     private StringBuffer bodytext = new StringBuffer();//存放邮件内容
@@ -349,11 +353,30 @@ public class MailParseExecute implements Runnable {
         return arr;
     }
 
+    /**
+     * 根据邮件的UID和绑定邮箱id判断该邮箱存不存在数据库中
+     * @param mailList
+     * @param uid
+     * @param bindId
+     * @return
+     */
+    public boolean existMailByUidAndBindId(List<Mail> mailList, String uid, String bindId) {
+        for (int i = 0; i < mailList.size(); i++) {
+            Mail mail = mailList.get(i);
+            if (uid.equals(mail.getUid()) && bindId.equals(mail.getBindId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void run() {
+
         Store store = null;
         IMAPFolder folder = null;
         List<Mail> mailList = new ArrayList<>();
+        List<Mail> existMail = null;
 //        List<Document> documents = new ArrayList<>();
 
         try {
@@ -374,12 +397,18 @@ public class MailParseExecute implements Runnable {
                 // 设置邮箱账号为同步中
                 bindEmail.setSynchronizing(1);
                 bindEmailService.updateOne(bindEmail);
+                existMail = mailService.getBaseMapper().find(new Query().addCriteria(Criteria.where("userId").is(bindEmail.getUserId()).and("bindId").is(bindEmail.getId())));
                 messages = folder.getMessages();
+                // 向前端实时更新同步进度
+                WebSocket.sendOneMessage(String.valueOf(bindEmail.getUserId()), JSON.toJSONString(WsResult.message(WsResult.PULL_READY_SUCCESS,messages.length)));
             } else {
                 messages = folder.getMessagesByUID(longToArray(uid));
             }
             folder.fetch(messages, profile);
             for (int i = 0; i < messages.length; i++) {
+                if (i >= 300) {
+                    break;
+                }
                 Mail mail = new Mail();
                 mail.setUserId(bindEmail.getUserId());
                 mail.setBindId(bindEmail.getId());
@@ -403,12 +432,15 @@ public class MailParseExecute implements Runnable {
                     mail.setFormName(getFromName());
                     // 获取收件人
                     mail.setRecipients(getMailAddress("to"));
+                    // 不标星标
+                    mail.setIsStar(0);
                     // 获取邮件内容
                     bodytext.setLength(0);
                     getMailContent((Part) messages[i]);
                     mail.setContent(getBodyText());
                     mail.setFileId(new String[fileCount]);
-                    fileCount=0;
+                    fileCount = 0;
+
                     // TODO 判断附件是否存在
 //                    if (isContainAttach((Part) messages[i])) {
 //                        saveAttachMent((Part) messages[i]);
@@ -417,7 +449,14 @@ public class MailParseExecute implements Runnable {
                     mail.setReceiveExceptionLog(e.getMessage());
                 } finally {
                     // 记录
-                    mailList.add(mail);
+                    if (isBatch) {
+                        if (!existMailByUidAndBindId(existMail, mail.getUid(), bindEmail.getId())) {
+                            mailList.add(mail);
+                        }
+                        WebSocket.sendOneMessage(String.valueOf(mail.getUserId()), JSON.toJSONString(WsResult.message(WsResult.PULL_MAIL_ING,mail)));
+                    } else {
+                        mailList.add(mail);
+                    }
                     log.info("邮件[{}]：【{}】解析完成", mail.getUid(), mail.getSubject());
                 }
             }
@@ -447,11 +486,12 @@ public class MailParseExecute implements Runnable {
                 // 设置邮箱账号未同步
                 bindEmail.setSynchronizing(0);
                 bindEmailService.updateOne(bindEmail);
+                WebSocket.sendOneMessage(String.valueOf(bindEmail.getUserId()), JSON.toJSONString(WsResult.message(WsResult.PULL_MAIL_SUCCESS,null)));
             } else {
                 // 使用收信规则
                 ruleService.executeRule(mailList);
                 // 使用websocket通知前端
-                mailList.forEach(item -> WebSocket.sendOneMessage(String.valueOf(item.getUserId()), JSON.toJSONString(Result.success(item))));
+                mailList.forEach(item -> WebSocket.sendOneMessage(String.valueOf(item.getUserId()), JSON.toJSONString(WsResult.message(WsResult.NEW_MAIL,item))));
             }
             log.info("邮件解析完毕");
         }

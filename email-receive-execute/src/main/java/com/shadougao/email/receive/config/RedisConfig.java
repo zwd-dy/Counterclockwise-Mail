@@ -99,6 +99,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         return ClientResources.builder().nettyCustomizer(nettyCustomizer).build();
     }
 
+
     /**
      * 设置 redis 数据默认过期时间，默认2小时
      * 设置@cacheable 序列化方式

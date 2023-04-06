@@ -150,6 +150,7 @@ public class MailListener implements Runnable {
             mailTask.getPoolExecutor().execute(listener);
         } finally {
             close(store, folder);
+            log.info("[{}] - 线程{}关闭",globalConfig.nodeName,Thread.currentThread().getName());
         }
     }
 

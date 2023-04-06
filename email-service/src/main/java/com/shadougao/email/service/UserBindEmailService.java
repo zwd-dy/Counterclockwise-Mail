@@ -18,4 +18,12 @@ public interface UserBindEmailService extends IService<UserBindEmail> {
 
     Result emailBindList();
 
+    /**
+     * 查看在其他账号是否有在同步
+     * @return
+     */
+    boolean isPull();
+
+
+    void pullMail(String bindId);
 }

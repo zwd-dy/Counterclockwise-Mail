@@ -1,8 +1,10 @@
 package com.shadougao.email.service.impl;
 
 import cn.hutool.cron.pattern.CronPatternUtil;
+import com.alibaba.fastjson.JSON;
 import com.shadougao.email.common.result.MailEnum;
 import com.shadougao.email.common.result.Result;
+import com.shadougao.email.common.result.WsResult;
 import com.shadougao.email.common.result.exception.BadRequestException;
 import com.shadougao.email.common.utils.CronUtil;
 import com.shadougao.email.common.utils.SecurityUtils;
@@ -14,10 +16,12 @@ import com.shadougao.email.entity.SysEmailPlatform;
 import com.shadougao.email.entity.SysUser;
 import com.shadougao.email.entity.UserBindEmail;
 import com.shadougao.email.entity.dto.PageData;
+import com.shadougao.email.execute.MailParseExecute;
 import com.shadougao.email.execute.SendMailExecute;
 import com.shadougao.email.execute.MailExecutor;
 import com.shadougao.email.service.MailService;
 import com.shadougao.email.service.QuartzJobService;
+import com.shadougao.email.service.UserBindEmailService;
 import com.shadougao.email.utils.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -241,12 +245,15 @@ public class MailServiceImpl extends ServiceImpl<MailDao, Mail> implements MailS
 
     @Override
     public void updateStar(List<Mail> mailList,Integer isStar) {
-        List<String> ids = new ArrayList<>();
-        mailList.forEach(item -> ids.add(item.getId()));
-        this.getBaseMapper().updateMulti(
-                new Query().addCriteria(Criteria.where("id").in(ids)),
-                new Update().set("isStar",isStar));
+//        List<String> ids = new ArrayList<>();
+//        mailList.forEach(item -> ids.add(item.getId()));
+//        this.getBaseMapper().updateMulti(
+//                new Query().addCriteria(Criteria.where("id").in(ids)),
+//                new Update().set("isStar",isStar));
+
+        mailList.forEach(item->{item.setIsStar(isStar);this.updateOne(item);});
 
     }
+
 
 }

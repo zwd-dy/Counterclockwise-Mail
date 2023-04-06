@@ -72,6 +72,7 @@ public class RedisExecuteListener {
         }
         // 分配任务
         taskRetrieve(null);
+        redisUtil.hset(KEY_NODE_LAST_HEART, globalConfig.nodeName, System.currentTimeMillis() / 1000);
         log.info("[{}] - 成功连接到主程序",globalConfig.nodeName);
     }
 
@@ -86,12 +87,16 @@ public class RedisExecuteListener {
         // 关闭所有线程的任务
         int j = 0;
         List<MailListener> threads = mailTask.getThreads();
-        for (int i = 0; i - j < threads.size(); i++) {
-            MailListener t = threads.get(i - j);
-            t.closeTask();
-            threads.remove(t);
-            j++;
+        for (MailListener thread : threads) {
+            thread.closeTask();
         }
+        threads.clear();
+//        for (int i = 0; i - j < threads.size(); i++) {
+//            MailListener t = threads.get(i - j);
+//            t.closeTask();
+//            threads.remove(t);
+//            j++;
+//        }
 //        System.out.println(Thread.currentThread().getName() + "，当前管理线程数：" + mailTask.getThreads().size());
         // 重新分配任务
         getTask();
@@ -106,7 +111,7 @@ public class RedisExecuteListener {
     @RedisResultCode(RedisResultEnum.TASK_NEW_ADD)
     public void taskNewAdd(RedisResult result) {
         String nodeName = result.getNodeName();
-        if (!nodeName.equals(nodeName)) {
+        if (!nodeName.equals(globalConfig.nodeName)) {
             return;
         }
         UserBindEmail bindEmail = (UserBindEmail) result.getData();
@@ -139,8 +144,10 @@ public class RedisExecuteListener {
             delTaskListener(bindId);
             // 将新任务添加到监听线程中
             UserBindEmail bindEmail = bindEmailDao.getOneById(bindId);
-            addTaskListener(bindEmail);
-            log.info("[{}] - 更新邮箱信息，重新启动监听线程，邮箱账号：{}，bindId：{}", globalConfig.nodeName, bindEmail.getEmailUser(), bindId);
+            if(bindEmail!=null) {
+                addTaskListener(bindEmail);
+                log.info("[{}] - 更新邮箱信息，重新启动监听线程，邮箱账号：{}，bindId：{}", globalConfig.nodeName, bindEmail.getEmailUser(), bindId);
+            }
         }
     }
 
@@ -194,6 +201,9 @@ public class RedisExecuteListener {
         // 获取任务
         // 获取邮箱平台列表
         List<SysEmailPlatform> platforms = platformDao.getAll();
+        for (SysEmailPlatform platform : platforms) {
+            log.info("获取到邮箱平台：{}",platform.getName());
+        }
         List<UserBindEmail> bindEmails = (List<UserBindEmail>) redisUtil.hget(KEY_NODE_TASK, globalConfig.nodeName);
         // 清空线程管理
         mailTask.getThreads().clear();
@@ -203,7 +213,13 @@ public class RedisExecuteListener {
                 // 设置监控邮箱
                 listener.setBindEmail(bindEmail);
                 // 设置对应邮箱平台
-                listener.setPlatform(platforms.stream().filter(p -> bindEmail.getPlatformId().equals(p.getId())).findFirst().get());
+                for (int i = 0; i < platforms.size(); i++) {
+                    if(bindEmail.getPlatformId().equals(platforms.get(i).getId())){
+                        listener.setPlatform(platforms.get(i));
+                        break;
+                    }
+                }
+//                listener.setPlatform(platforms.stream().filter(p -> bindEmail.getPlatformId().equals(p.getId())).findFirst().get());
                 // 设置轮询周期（秒级）
                 listener.setSleepTime(globalConfig.normalCycle);
                 // 执行
@@ -218,6 +234,9 @@ public class RedisExecuteListener {
      * @param bindEmail
      */
     public void addTaskListener(UserBindEmail bindEmail) {
+        if(bindEmail==null){
+            return;
+        }
         // 获取该任务的平台
         SysEmailPlatform platform = platformDao.getOneById(bindEmail.getPlatformId());
         if (platform == null) {
@@ -232,7 +251,7 @@ public class RedisExecuteListener {
         // 设置对应邮箱平台
         listener.setPlatform(platform);
         // 设置轮询周期（秒级）
-        listener.setSleepTime(globalConfig.normalCycle);
+        listener.setSleepTime(globalConfig.userOnlineCycle);
         // 执行
         mailTask.getPoolExecutor().execute(listener);
     }

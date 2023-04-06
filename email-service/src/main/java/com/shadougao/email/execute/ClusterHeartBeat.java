@@ -44,23 +44,23 @@ public class ClusterHeartBeat implements Runnable {
                 String nodeName = (String) node;
                 // 获取子节点最后一次心跳时间
                 Object objLastTime = redisUtil.hget(KEY_NODE_LAST_HEART, nodeName);
-                long lastTime = time;
-                if (objLastTime == null) {
-                    lastTime = 0l;
+                long lastTime = 0l;
+                if (objLastTime != null) {
+                    lastTime = (long) objLastTime;
                 }
 
                 // 如果子节点超过 [timeout] 没有更新时间，说明寄了，需要给所有节点重新分配任务
                 if (time - lastTime > timeout) {   // 秒单位对比
                     // 剔除该子节点信息
-                    redisUtil.setRemove(KEY_NODE_LIST,nodeName);
+                    redisUtil.setRemove(KEY_NODE_LIST, nodeName);
                     redisUtil.hdel(KEY_NODE_LAST_HEART, nodeName);
                     redisUtil.hdel(KEY_NODE_TASK, nodeName);
                     // 重新分配任务
-                    if (GetBeanUtil.getApplicationContext().getBean(RedisMainListener.class).assignTask()) {
+                    if (new RedisMainListener().assignTask()) {
                         // 告知所有子节点重新获取任务
                         redisUtil.publist(redisConfig.mainChannel, new RedisResult(RedisResultEnum.TASK_RETRIEVE, "pull task"));
                     }
-                    log.error("节点：{} 已掉线，清理节点在缓存中的相关信息",nodeName);
+                    log.error("节点：{} 已掉线，清理节点在缓存中的相关信息", nodeName);
                 }
             }
 

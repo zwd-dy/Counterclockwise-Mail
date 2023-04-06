@@ -17,7 +17,7 @@ public enum RedisResultEnum {
     TASK_RETRIEVE(201,"重新获取任务"),
     TASK_NEW_ADD(202,"新任务加入"),
     TASK_DEL(203,"删除任务"),
-    TASK_UPDATE(203,"更新任务"),
+    TASK_UPDATE(204,"更新任务"),
     USER_ONLINE(301,"用户在线"),
     USER_OFFLINE(302,"用户离线");
 

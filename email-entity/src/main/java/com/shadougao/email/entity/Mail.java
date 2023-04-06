@@ -31,10 +31,12 @@ public class Mail extends MongoBaseEntity {
     /**
      * 发件人地址
      */
+    @MongoLikeQuery
     private String from;
     /**
      * 发件人姓名
      */
+    @MongoLikeQuery
     private String formName;
     /**
      * 收件人地址
@@ -85,5 +87,6 @@ public class Mail extends MongoBaseEntity {
      * 是否星标,    0:不是    1/是
      */
     private Integer isStar;
+    private Integer isParse;
 
 }

@@ -8,6 +8,7 @@ import com.shadougao.email.config.security.bean.UserCacheClean;
 import com.shadougao.email.entity.OnlineUserDto;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 @RequiredArgsConstructor
+@Slf4j
 public class TokenFilter extends GenericFilterBean {
 
     private final SecurityProperties properties;
@@ -57,6 +59,7 @@ public class TokenFilter extends GenericFilterBean {
                 tokenProvider.checkRenewal(token);
             }
         }
+        log.info("获取到用户token:{} | URL：{}",token,httpServletRequest.getRequestURL().toString());
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

@@ -29,4 +29,5 @@ public interface MailService extends IService<Mail> {
     void delToTag(List<Mail> mailList);
 
     void updateStar(List<Mail> mailList,Integer isStar);
+
 }

@@ -5,6 +5,7 @@ import com.shadougao.email.entity.MongoBaseEntity;
 import com.shadougao.email.entity.dto.PageData;
 import com.shadougao.email.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 
@@ -36,6 +37,11 @@ public class ServiceImpl<M extends BaseDao<T>,T extends MongoBaseEntity> impleme
     @Override
     public void batchDel(List<String> names) {
         baseMapper.batchDel(names);
+    }
+
+    @Override
+    public void batchDel(Query query) {
+        baseMapper.batchDel(query);
     }
 
     @Override

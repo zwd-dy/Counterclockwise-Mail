@@ -65,6 +65,7 @@ public class RedisMainListener {
         long nodeNum = redisUtil.sGetSetSize(KEY_NODE_LIST) + 1;
         String name = NODE_PREFIX + nodeNum;
         redisUtil.sSet(KEY_NODE_LIST, name);
+        redisUtil.hset(KEY_NODE_TASK, name, new ArrayList<UserBindEmail>());
         // 计算并分配任务
         assignTask();
         this.send(new RedisResult(RedisResultEnum.CONNECT_SUCCESS, name));
@@ -139,17 +140,23 @@ public class RedisMainListener {
 
     /**
      * 发送添加任务
+     *
      * @param bindEmail
      */
     public void addTask(UserBindEmail bindEmail) {
         long nodeNum = redisUtil.sGetSetSize(KEY_NODE_LIST);
         // 获取所有需要监控的邮箱账号
         List<UserBindEmail> bindEmails = bindEmailService.getAll();
-        // 计算每个节点最多任务量：总任务量 / 节点数 (四舍五入)
-        if (bindEmails.size() < nodeNum || nodeNum == 0) {
+
+        if (nodeNum == 0) {
             return;
         }
+        // 计算每个节点最多任务量：总任务量 / 节点数 (四舍五入)
         Long nodeTaskNum = Math.round((double) bindEmails.size() / nodeNum);
+        if (bindEmails.size() < nodeNum) {
+            nodeTaskNum = (long) bindEmails.size();
+        }
+        log.info("[cluster] - 添加任务邮箱：{}，节点数：{}，平均任务量：{}", bindEmail.getEmailUser(), nodeNum, nodeTaskNum);
         // 获取节点列表
         Set<Object> nodes = redisUtil.hkeys(KEY_NODE_TASK);
         for (Object node : nodes) {
@@ -169,6 +176,7 @@ public class RedisMainListener {
 
     /**
      * 发送删除任务
+     *
      * @param bindId
      */
     public void delTask(String bindId) {
@@ -180,10 +188,9 @@ public class RedisMainListener {
                 nodeName = (String) node;
                 List<UserBindEmail> bindUserList = (List<UserBindEmail>) redisUtil.hget(KEY_NODE_TASK, nodeName);
                 if (bindUserList != null) {
-                    List<UserBindEmail> newList = bindUserList.stream().filter(item -> item.getId().equals(bindId)).collect(Collectors.toList());
+                    List<UserBindEmail> newList = bindUserList.stream().filter(item -> !item.getId().equals(bindId)).collect(Collectors.toList());
                     redisUtil.hset(KEY_NODE_TASK, nodeName, newList);
                     send(new RedisResult(RedisResultEnum.TASK_DEL, bindId, nodeName));
-                    break;
                 }
             }
         }

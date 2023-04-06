@@ -66,6 +66,11 @@ public class BaseDaoImpl<T extends MongoBaseEntity> implements BaseDao<T> {
     }
 
     @Override
+    public void batchDel(Query query) {
+        mongoTemplate.remove(query, entityClass, collectionName);
+    }
+
+    @Override
     public T addOne(T t) {
         return mongoTemplate.insert(t, collectionName);
     }

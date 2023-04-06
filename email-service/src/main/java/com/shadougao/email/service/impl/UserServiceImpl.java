@@ -82,6 +82,6 @@ public class UserServiceImpl implements UserService {
     public void sendValidCode(String email) {
         String code = RandomUtil.randomNumbers(6);
         redisUtil.set(CacheKey.USER_ADD + email, code, 3, TimeUnit.MINUTES);
-        MailUtil.send(email, "【牛魔酬宾科技】", String.format("注册验证码为: %s 有效期为3分钟", code), true);
+        MailUtil.send(email, "【多邮件收发系统】", String.format("注册验证码为: %s 有效期为3分钟", code), true);
     }
 }
