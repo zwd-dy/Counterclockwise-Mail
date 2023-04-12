@@ -7,7 +7,7 @@
 - 数据库
   - 系统表采用 **MySql**（例如用户表）
   - 业务表采用 **MongoDB**
-- 使用**SpringBoot Security**实现用户系统
+- 使用**Spring Security**实现用户系统
 - 使用**quartz**任务调度框架实现邮件定时发送
 - 邮件监听采用集群方式，利用 **redis**的发布订阅来当中间件，redis缓存当邮件任务池，实现cluster与后端程序的交互
 - 使用**websocket**实现对前端新邮件的推送
